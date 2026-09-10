@@ -521,16 +521,20 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 async function autoPushCloud() {
     if (!orbinuityToken) return;
     try {
+        const localFolders = folders.filter(f => f.id === 'default' || !f.id.startsWith('room_'));
+
         const payload = { 
-            folders, 
-            cases,
+            folders: localFolders, 
+            cases: cases,
             settings: {
                 theme: currentTheme,
                 lang: currentLang
             }
         };
         await apiCall(`/external/${APP_ID}`, 'PUT', payload);
-    } catch (e) {}
+    } catch (e) {
+        console.error("AutoPush failed:", e);
+    }
 }
 
 async function autoPullCloud() {
@@ -539,24 +543,28 @@ async function autoPullCloud() {
         let roomFolders = [];
         try {
             const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
-            if (roomData && roomData.rooms) {
+            if (roomData && Array.isArray(roomData.rooms)) {
                 roomFolders = roomData.rooms.map(r => ({
                     id: r.id,
                     name: r.name,
                     members: r.members || []
                 }));
             }
-        } catch (e) {}
+        } catch (e) {
+            console.warn("Failed to fetch room folders:", e);
+        }
 
         let res = null;
         try {
             res = await apiCall(`/external/${APP_ID}`, 'GET');
-        } catch (e) {}
+        } catch (e) {
+            console.warn("Failed to fetch app storage:", e);
+        }
 
-        const data = (res && (res.data || res.payload || res.storage)) || res;
+        const data = res ? (res.data || res.payload || res.storage || res) : null;
 
         if (data && (data.cases || data.folders || data.settings)) {
-            if (data.cases && Array.isArray(data.cases)) {
+            if (Array.isArray(data.cases)) {
                 cases = data.cases;
             }
 
@@ -565,8 +573,9 @@ async function autoPullCloud() {
 
             const folderMap = new Map();
             folderMap.set('default', defaultFolder);
-            cloudFolders.forEach(f => folderMap.set(f.id, f));
-            roomFolders.forEach(r => folderMap.set(r.id, r));
+            cloudFolders.forEach(f => { if (f.id) folderMap.set(f.id, f); });
+            roomFolders.forEach(r => { if (r.id) folderMap.set(r.id, r); });
+
             folders = Array.from(folderMap.values());
 
             if (data.settings) {
@@ -579,17 +588,12 @@ async function autoPullCloud() {
                     applyLanguage(currentLang, false);
                 }
             }
-        } else {
-            const defaultFolder = { id: 'default', name: 'My Cases', members: [] };
+        } else if (res === null) {
             const folderMap = new Map();
-            folderMap.set('default', defaultFolder);
+            folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
             roomFolders.forEach(r => folderMap.set(r.id, r));
             folders = Array.from(folderMap.values());
-            cases = [];
-            currentTheme = 'light';
-            currentLang = 'en';
-            applyTheme(currentTheme);
-            applyLanguage(currentLang, false);
+
             await autoPushCloud();
         }
 
@@ -603,14 +607,7 @@ async function autoPullCloud() {
             renderActiveCase();
         }
     } catch (e) {
-        folders = [{ id: 'default', name: 'My Cases', members: [] }];
-        cases = [];
-        currentTheme = 'light';
-        currentLang = 'en';
-        applyTheme(currentTheme);
-        applyLanguage(currentLang, false);
-        renderSidebar();
-        renderActiveCase();
+        console.error("AutoPull error:", e);
     }
 }
 
