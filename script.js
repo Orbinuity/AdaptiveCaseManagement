@@ -342,11 +342,12 @@ document.getElementById('new-folder-btn').addEventListener('click', async () => 
     if (name) {
         if (orbinuityToken) {
             try {
-                const res = await apiCall('/external/rooms', 'POST', { name: name.trim(), appId: APP_ID });
+                const res = await apiCall('/external/rooms', 'POST', { name: name.trim(), description: "", appId: APP_ID });
                 if (res && res.room) {
                     const newRoomFolder = { id: res.room.id, name: res.room.name, members: res.room.members || [] };
                     folders.push(newRoomFolder);
                     saveState();
+                    await autoPullCloud();
                     renderSidebar();
                     return;
                 }
@@ -629,10 +630,11 @@ function updateCloudUI() {
     }
 }
 
-function openShareModal(folderId) {
+async function openShareModal(folderId) {
     targetShareFolderId = folderId;
     document.getElementById('share-username-input').value = '';
     
+    await autoPullCloud();
     const folder = folders.find(f => f.id === folderId);
     renderSharedUsersList(folder);
 
@@ -653,8 +655,17 @@ function renderSharedUsersList(folder) {
         li.className = 'shared-user-item';
         
         const nameSpan = document.createElement('span');
-        const displayName = typeof u === 'object' ? (u.displayName || u.username) : u;
-        const username = typeof u === 'object' ? u.username : u;
+        let displayName = '';
+        let username = '';
+
+        if (typeof u === 'object' && u !== null) {
+            displayName = u.displayName || u.username || u.userId || 'User';
+            username = u.username || u.userId || 'User';
+        } else if (typeof u === 'string') {
+            displayName = u;
+            username = u;
+        }
+
         nameSpan.textContent = `${displayName} (@${username})`;
         
         li.appendChild(nameSpan);
