@@ -82,3 +82,5 @@ a:hover { text-decoration: underline; }
 .delete-item-btn:hover { opacity: 1; color: var(--danger-color); }
 .delete-block-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.5; font-weight: bold; color: var(--text-dark); }
 .delete-block-btn:hover { opacity: 1; color: var(--danger-color); }
+
+.shared-user-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: var(--hover-bg); border-radius: 4px; margin-bottom: 5px; font-size: 0.9rem; }
