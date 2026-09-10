@@ -13,7 +13,7 @@
         <div class="auth-card">
             <div class="auth-header">
                 <img src="https://data.orbinuity.nl/acm/logo.png" alt="ACM Logo" class="auth-logo">
-                <h2>ACM System</h2>
+                <h2 data-i18n="appTitle">ACM System</h2>
             </div>
 
             <div class="form-group" style="margin-bottom: 20px;">
@@ -29,11 +29,11 @@
             <div id="cloud-login-form">
                 <div class="form-group">
                     <label data-i18n="identifier">Username or Email</label>
-                    <input type="text" id="login-identifier" placeholder="username / email">
+                    <input type="text" id="login-identifier" data-i18n="loginIdentifierPlaceholder" placeholder="username / email">
                 </div>
                 <div class="form-group">
                     <label data-i18n="password">Password</label>
-                    <input type="password" id="login-password" placeholder="••••••••">
+                    <input type="password" id="login-password" data-i18n="passwordPlaceholder" placeholder="••••••••">
                 </div>
                 <button id="cloud-login-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="loginBtn">Login to Orbinuity</button>
                 <p style="margin-top: 15px; font-size: 0.85rem; text-align: center;">
@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label data-i18n="otpCode">6-Digit 2FA Code</label>
                     <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 5px;" data-i18n="otpSentDesc">A code was sent to your email.</p>
-                    <input type="text" id="login-otp" placeholder="123456" maxlength="6">
+                    <input type="text" id="login-otp" data-i18n="otpPlaceholder" placeholder="123456" maxlength="6">
                 </div>
                 <button id="cloud-verify-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="verifyBtn">Verify & Login</button>
             </div>
@@ -145,7 +145,7 @@
             <p data-i18n="shareFolderDesc" style="margin-bottom:15px; color:var(--text-light);">Look up a user by their Orbinuity username to invite them to this folder.</p>
             
             <div class="form-group share-input-container">
-                <input type="text" id="share-username-input" placeholder="@username">
+                <input type="text" id="share-username-input" data-i18n="usernamePlaceholder" placeholder="@username">
                 <button id="add-member-btn" class="btn primary-btn" data-i18n="addUser">Add User</button>
             </div>
 
