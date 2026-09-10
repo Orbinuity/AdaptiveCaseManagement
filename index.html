@@ -31,13 +31,39 @@
 
             <div id="active-case-view" class="case-view hidden">
                 <div class="case-header">
-                    <h1 id="active-case-title">Case Title</h1>
-                    <button id="add-block-btn" class="btn secondary-btn" data-i18n="addInfoBlock">+ Add Info Block</button>
+                    <div>
+                        <h1 id="active-case-title">Case Title</h1>
+                        <p id="active-case-description" class="case-description"></p>
+                    </div>
+                    <div class="case-header-actions">
+                        <button id="edit-case-btn" class="btn secondary-btn" data-i18n="editCaseBtn">Edit Case</button>
+                        <button id="add-block-btn" class="btn secondary-btn" data-i18n="addInfoBlock">+ Add Info Block</button>
+                    </div>
                 </div>
                 
                 <div id="blocks-container" class="blocks-grid"></div>
             </div>
         </main>
+    </div>
+
+    <div id="case-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn close-case-modal">&times;</span>
+            <h2 id="case-modal-title" data-i18n="createCaseTitle">Create Case</h2>
+            <form id="case-form">
+                <div class="form-group">
+                    <label data-i18n="titleName">Title / Name</label>
+                    <input type="text" id="case-title-input" required data-i18n="titlePlaceholder" placeholder="Case Name">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="description">Description</label>
+                    <textarea id="case-desc-input" rows="3" data-i18n="descPlaceholder" placeholder="Case description..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn primary-btn" data-i18n="saveCase">Save Case</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="settings-modal" class="modal hidden">
