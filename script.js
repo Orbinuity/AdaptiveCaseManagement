@@ -193,8 +193,8 @@ async function init() {
     }
 }
 
-function saveState() {
-    autoPushCloud();
+async function saveState() {
+    await autoPushCloud();
 }
 
 function renderSidebar() {
@@ -364,24 +364,40 @@ function renderActiveCase() {
 
 document.getElementById('new-folder-btn').addEventListener('click', async () => {
     const name = prompt(getTrans('promptNewFolder'));
-    if (name) {
-        if (orbinuityToken) {
-            try {
-                const res = await apiCall('/external/rooms', 'POST', { name: name.trim(), description: "", appId: APP_ID });
-                if (res && res.room) {
-                    const newRoomFolder = { id: res.room.id, name: res.room.name, members: res.room.members || [] };
-                    folders.push(newRoomFolder);
-                    saveState();
-                    await autoPullCloud();
-                    renderSidebar();
-                    return;
-                }
-            } catch (e) {}
+    if (!name || !name.trim()) return;
+
+    const cleanName = name.trim();
+
+    if (orbinuityToken) {
+        try {
+            const res = await apiCall('/external/rooms', 'POST', { 
+                name: cleanName, 
+                description: "", 
+                appId: APP_ID 
+            });
+
+            if (res && res.room) {
+                const newRoomFolder = { 
+                    id: res.room.id, 
+                    name: res.room.name, 
+                    members: res.room.members || [] 
+                };
+                
+                folders.push(newRoomFolder);
+                await saveState();
+                renderSidebar();
+                return;
+            }
+        } catch (e) {
+            console.error("Failed to create folder on server:", e);
+            alert("Could not create folder on server. Please try again.");
+            return;
         }
-        folders.push({ id: generateId(), name: name.trim(), members: [] });
-        saveState(); 
-        renderSidebar();
     }
+
+    folders.push({ id: generateId(), name: cleanName, members: [] });
+    await saveState(); 
+    renderSidebar();
 });
 
 function createCase(folderId) {
