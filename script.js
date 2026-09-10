@@ -1,6 +1,13 @@
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 const APP_ID = 'acm_app';
 
+const icons = {
+    edit: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
+    share: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
+    plus: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+    cross: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+};
+
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -251,7 +258,7 @@ function renderSidebar() {
         if (folder.id !== 'default') {
             const renameBtn = document.createElement('button');
             renameBtn.className = 'small-btn';
-            renameBtn.textContent = getTrans('renameBtn');
+            renameBtn.innerHTML = icons.edit;
             renameBtn.title = getTrans('renameBtn');
             renameBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -261,7 +268,7 @@ function renderSidebar() {
 
             const shareBtn = document.createElement('button');
             shareBtn.className = 'small-btn';
-            shareBtn.textContent = getTrans('shareBtn');
+            shareBtn.innerHTML = icons.share;
             shareBtn.title = getTrans('shareFolderTitle');
             shareBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -272,7 +279,7 @@ function renderSidebar() {
         
         const addCaseBtn = document.createElement('button');
         addCaseBtn.className = 'small-btn';
-        addCaseBtn.textContent = getTrans('addCaseBtn');
+        addCaseBtn.innerHTML = icons.plus;
         addCaseBtn.title = getTrans('addCaseBtn');
         addCaseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -283,8 +290,8 @@ function renderSidebar() {
         if (folder.id !== 'default') {
             const delFolderBtn = document.createElement('button');
             delFolderBtn.className = 'small-btn small-danger';
-            delFolderBtn.textContent = 'X';
-            delFolderBtn.title = 'X';
+            delFolderBtn.innerHTML = icons.cross;
+            delFolderBtn.title = getTrans('confirmDeleteFolder');
             delFolderBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteFolder(folder.id);
@@ -310,8 +317,8 @@ function renderSidebar() {
             
             const delCaseBtn = document.createElement('button');
             delCaseBtn.className = 'delete-item-btn';
-            delCaseBtn.textContent = 'X';
-            delCaseBtn.title = 'X';
+            delCaseBtn.innerHTML = icons.cross;
+            delCaseBtn.title = getTrans('confirmDeleteCase');
             delCaseBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteCase(c.id);
@@ -393,14 +400,14 @@ function renderActiveCase() {
 
         const editBtn = document.createElement('button');
         editBtn.className = 'small-btn';
-        editBtn.textContent = getTrans('editBtn');
+        editBtn.innerHTML = icons.edit;
         editBtn.title = getTrans('editBtn');
         editBtn.addEventListener('click', () => editBlock(currentCase.id, block.id));
 
         const delBtn = document.createElement('button');
         delBtn.className = 'delete-block-btn';
-        delBtn.textContent = 'X';
-        delBtn.title = 'X';
+        delBtn.innerHTML = icons.cross;
+        delBtn.title = getTrans('confirmDeleteBlock');
         delBtn.addEventListener('click', () => deleteBlock(currentCase.id, block.id));
 
         cardActions.appendChild(editBtn);
@@ -588,7 +595,7 @@ function addCustomFieldRow(key = '', val = '') {
     div.className = 'custom-field-input';
     const keyPh = getTrans('keyPlaceholder');
     const valPh = getTrans('valPlaceholder');
-    div.innerHTML = `<input type="text" placeholder="${keyPh}" class="field-key" value="${key}" required><input type="text" placeholder="${valPh}" class="field-val" value="${val}" required><button type="button" class="remove-field" title="Remove">X</button>`;
+    div.innerHTML = `<input type="text" placeholder="${keyPh}" class="field-key" value="${key}" required><input type="text" placeholder="${valPh}" class="field-val" value="${val}" required><button type="button" class="remove-field" title="Remove">&times;</button>`;
     div.querySelector('.remove-field').addEventListener('click', () => div.remove());
     document.getElementById('custom-fields-container').appendChild(div);
 }
@@ -828,8 +835,13 @@ function renderSharedUsersList(folder) {
             displayName = u.displayName || u.username || u.userId || 'User';
             username = u.username || u.userId || 'User';
         } else if (typeof u === 'string') {
-            displayName = u;
-            username = u;
+            if (currentUser && String(currentUser.id) === u) {
+                displayName = currentUser.displayName || currentUser.username;
+                username = currentUser.username;
+            } else {
+                displayName = u;
+                username = u;
+            }
         }
 
         nameSpan.textContent = `${displayName} (@${username})`;
