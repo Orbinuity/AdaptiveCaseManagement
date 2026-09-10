@@ -35,7 +35,7 @@ const translations = {
         blockType: "Block Type", typePerson: "Person / Subject", typeGeneral: "General Information", typeLocation: "Location",
         titleName: "Title / Name", picture: "Picture", description: "Description",
         additionalInfo: "Custom Fields", addCustomField: "+ Add Custom Field", saveBlock: "Save Info Block",
-        settingsTitle: "Settings", appearance: "Appearance & Localization", language: "Language",
+        settingsTitle: "Settings", settingsBtn: "Settings", appearance: "Appearance & Localization", language: "Language",
         toggleTheme: "Toggle Theme", cloudSyncTitle: "Orbinuity Cloud Sync",
         identifier: "Username or Email", password: "Password", loginBtn: "Login to Orbinuity",
         noAccount: "Don't have an account?", makeAccount: "Make one at Orbinuity",
@@ -43,33 +43,87 @@ const translations = {
         syncUp: "Push Data to Cloud", syncDown: "Pull Data from Cloud",
         disconnect: "Disconnect", notLoggedIn: "Not connected.", loggedInAs: "Connected as:",
         shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them.",
-        search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:",
-        promptNewFolder: "Enter Folder Name:", promptNewCase: "Enter new Case Name:", 
+        search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:", shareBtn: "Share", addCaseBtn: "+ Case",
+        promptNewFolder: "Enter Folder Name:", promptNewCase: "Enter new Case Name:", noneYet: "None yet",
         confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?"
     },
     nl: {
         appTitle: "ACM Systeem", defaultFolder: "Mijn Zaken", newFolder: "+ Nieuwe Map", emptyState: "Selecteer een zaak om te beginnen",
         addInfoBlock: "+ Info Blok", createBlockTitle: "Info Blok Aanmaken", editBlockTitle: "Info Blok Bewerken", editBtn: "Bewerken",
-        settingsTitle: "Instellingen", cloudSyncTitle: "Orbinuity Cloud Sync", identifier: "Gebruikersnaam of E-mail", password: "Wachtwoord",
-        loginBtn: "Inloggen", syncUp: "Push naar Cloud", syncDown: "Pull van Cloud",
-        promptNewFolder: "Map naam:", promptNewCase: "Zaak naam:"
+        blockType: "Blok Type", typePerson: "Persoon / Onderwerp", typeGeneral: "Algemene Informatie", typeLocation: "Locatie",
+        titleName: "Titel / Naam", picture: "Afbeelding", description: "Beschrijving",
+        additionalInfo: "Aangepaste Velden", addCustomField: "+ Aangepast Veld", saveBlock: "Info Blok Opslaan",
+        settingsTitle: "Instellingen", settingsBtn: "Instellingen", appearance: "Uiterlijk & Lokalisatie", language: "Taal",
+        toggleTheme: "Thema Wisselen", cloudSyncTitle: "Orbinuity Cloud Sync",
+        identifier: "Gebruikersnaam of E-mail", password: "Wachtwoord", loginBtn: "Inloggen bij Orbinuity",
+        noAccount: "Nog geen account?", makeAccount: "Maak er een aan bij Orbinuity",
+        otpCode: "6-Cijferige 2FA Code", otpSentDesc: "Er is een code naar je e-mail gestuurd.", verifyBtn: "Verifiëren & Inloggen",
+        syncUp: "Push naar Cloud", syncDown: "Pull van Cloud",
+        disconnect: "Uitloggen", notLoggedIn: "Niet verbonden.", loggedInAs: "Ingelogd als:",
+        shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen.",
+        search: "Zoeken", addUser: "Gebruiker Toevoegen", sharedWithTitle: "Gedeeld Met:", shareBtn: "Delen", addCaseBtn: "+ Zaak",
+        promptNewFolder: "Voer mapnaam in:", promptNewCase: "Voer zaaknaam in:", noneYet: "Nog niemand",
+        confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?"
     },
     es: {
         appTitle: "Sistema ACM", defaultFolder: "Mis Casos", newFolder: "+ Nueva Carpeta", emptyState: "Seleccione un caso para comenzar",
         addInfoBlock: "+ Bloque de Info", createBlockTitle: "Crear Bloque", editBlockTitle: "Editar Bloque", editBtn: "Editar",
-        settingsTitle: "Configuración", cloudSyncTitle: "Nube Orbinuity", promptNewFolder: "Nombre de la carpeta:", promptNewCase: "Nombre del caso:"
+        blockType: "Tipo de Bloque", typePerson: "Persona / Sujeto", typeGeneral: "Información General", typeLocation: "Ubicación",
+        titleName: "Título / Nombre", picture: "Imagen", description: "Descripción",
+        additionalInfo: "Campos Personalizados", addCustomField: "+ Añadir Campo", saveBlock: "Guardar Bloque",
+        settingsTitle: "Configuración", settingsBtn: "Ajustes", appearance: "Apariencia y Localización", language: "Idioma",
+        toggleTheme: "Cambiar Tema", cloudSyncTitle: "Nube Orbinuity",
+        identifier: "Usuario o Email", password: "Contraseña", loginBtn: "Iniciar Sesión",
+        noAccount: "¿No tienes cuenta?", makeAccount: "Crea una en Orbinuity",
+        otpCode: "Código 2FA de 6 dígitos", otpSentDesc: "Se ha enviado un código a tu correo.", verifyBtn: "Verificar e Iniciar",
+        syncUp: "Subir a la Nube", syncDown: "Descargar de la Nube",
+        disconnect: "Desconectar", notLoggedIn: "No conectado.", loggedInAs: "Conectado como:",
+        shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity.",
+        search: "Buscar", addUser: "Añadir Usuario", sharedWithTitle: "Compartido Con:", shareBtn: "Compartir", addCaseBtn: "+ Caso",
+        promptNewFolder: "Nombre de la carpeta:", promptNewCase: "Nombre del caso:", noneYet: "Aún nadie",
+        confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?"
     },
     fr: {
         appTitle: "Système ACM", defaultFolder: "Mes Dossiers", newFolder: "+ Nouveau Dossier", emptyState: "Sélectionnez un cas pour commencer",
         addInfoBlock: "+ Ajouter un Bloc", createBlockTitle: "Créer un Bloc", editBlockTitle: "Modifier le Bloc", editBtn: "Modifier",
-        settingsTitle: "Paramètres", cloudSyncTitle: "Nuage Orbinuity", promptNewFolder: "Nom du dossier:", promptNewCase: "Nom du cas:"
+        blockType: "Type de Bloc", typePerson: "Personne / Sujet", typeGeneral: "Informations Générales", typeLocation: "Emplacement",
+        titleName: "Titre / Nom", picture: "Image", description: "Description",
+        additionalInfo: "Champs Personnalisés", addCustomField: "+ Ajouter un Champ", saveBlock: "Enregistrer",
+        settingsTitle: "Paramètres", settingsBtn: "Paramètres", appearance: "Apparence & Localisation", language: "Langue",
+        toggleTheme: "Changer de Thème", cloudSyncTitle: "Nuage Orbinuity",
+        identifier: "Nom d'utilisateur ou Email", password: "Mot de passe", loginBtn: "Se connecter",
+        noAccount: "Pas encore de compte ?", makeAccount: "Créer un compte sur Orbinuity",
+        otpCode: "Code 2FA à 6 chiffres", otpSentDesc: "Un code a été envoyé par email.", verifyBtn: "Vérifier & Connexion",
+        syncUp: "Envoyer vers la Cloud", syncDown: "Télécharger de la Cloud",
+        disconnect: "Déconnexion", notLoggedIn: "Non connecté.", loggedInAs: "Connecté en tant que :",
+        shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity.",
+        search: "Rechercher", addUser: "Ajouter L'utilisateur", sharedWithTitle: "Partagé Avec :", shareBtn: "Partager", addCaseBtn: "+ Cas",
+        promptNewFolder: "Nom du dossier :", promptNewCase: "Nom du cas :", noneYet: "Aucun pour le moment",
+        confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?"
     },
     de: {
         appTitle: "ACM-System", defaultFolder: "Meine Fälle", newFolder: "+ Neuer Ordner", emptyState: "Fall auswählen um zu beginnen",
         addInfoBlock: "+ Info-Block", createBlockTitle: "Block Erstellen", editBlockTitle: "Block Bearbeiten", editBtn: "Bearbeiten",
-        settingsTitle: "Einstellungen", cloudSyncTitle: "Orbinuity Cloud Sync", promptNewFolder: "Ordnername:", promptNewCase: "Fallname:"
+        blockType: "Block-Typ", typePerson: "Person / Subjekt", typeGeneral: "Allgemeine Info", typeLocation: "Standort",
+        titleName: "Titel / Name", picture: "Bild", description: "Beschreibung",
+        additionalInfo: "Benutzerdefinierte Felder", addCustomField: "+ Feld Hinzufügen", saveBlock: "Speichern",
+        settingsTitle: "Einstellungen", settingsBtn: "Optionen", appearance: "Erscheinungsbild & Sprache", language: "Sprache",
+        toggleTheme: "Design Wechseln", cloudSyncTitle: "Orbinuity Cloud Sync",
+        identifier: "Benutzername oder E-Mail", password: "Passwort", loginBtn: "Anmelden",
+        noAccount: "Noch kein Konto?", makeAccount: "Bei Orbinuity erstellen",
+        otpCode: "6-stelliger 2FA-Code", otpSentDesc: "Ein Code wurde an Ihre E-Mail gesendet.", verifyBtn: "Bestätigen & Anmelden",
+        syncUp: "In die Cloud Hochladen", syncDown: "Aus der Cloud Laden",
+        disconnect: "Trennen", notLoggedIn: "Nicht verbunden.", loggedInAs: "Angemeldet als:",
+        shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen.",
+        search: "Suchen", addUser: "Hinzufügen", sharedWithTitle: "Geteilt Mit:", shareBtn: "Teilen", addCaseBtn: "+ Fall",
+        promptNewFolder: "Ordnername:", promptNewCase: "Fallname:", noneYet: "Noch niemand",
+        confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?"
     }
 };
+
+function getTrans(key) {
+    return (translations[currentLang] && translations[currentLang][key]) || translations['en'][key] || '';
+}
 
 function init() {
     applyTheme(currentTheme);
@@ -86,7 +140,6 @@ function saveState() {
 
 function renderSidebar() {
     sidebarContent.innerHTML = '';
-    const t = translations[currentLang] || translations['en'];
     
     folders.forEach(folder => {
         const folderDiv = document.createElement('div');
@@ -96,30 +149,31 @@ function renderSidebar() {
         header.className = 'folder-header';
         
         const folderNameSpan = document.createElement('span');
-        folderNameSpan.textContent = folder.id === 'default' ? (t.defaultFolder || 'My Cases') : folder.name;
+        folderNameSpan.textContent = folder.id === 'default' ? getTrans('defaultFolder') : folder.name;
         
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'folder-actions';
         
-        const shareBtn = document.createElement('button');
-        shareBtn.className = 'small-btn';
-        shareBtn.textContent = 'Share';
-        shareBtn.title = 'Share Folder';
-        shareBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openShareModal(folder.id);
-        });
+        if (folder.id !== 'default') {
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'small-btn';
+            shareBtn.textContent = getTrans('shareBtn');
+            shareBtn.title = 'Share Folder';
+            shareBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openShareModal(folder.id);
+            });
+            actionsDiv.appendChild(shareBtn);
+        }
         
         const addCaseBtn = document.createElement('button');
         addCaseBtn.className = 'small-btn';
-        addCaseBtn.textContent = '+ Case';
+        addCaseBtn.textContent = getTrans('addCaseBtn');
         addCaseBtn.title = 'Add Case';
         addCaseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             createCase(folder.id);
         });
-        
-        actionsDiv.appendChild(shareBtn);
         actionsDiv.appendChild(addCaseBtn);
         
         if (folder.id !== 'default') {
@@ -190,7 +244,6 @@ function renderActiveCase() {
     document.getElementById('active-case-title').textContent = currentCase.title;
     
     blocksContainer.innerHTML = '';
-    const t = translations[currentLang] || translations['en'];
     
     currentCase.blocks.forEach(block => {
         const card = document.createElement('div');
@@ -201,7 +254,7 @@ function renderActiveCase() {
 
         const editBtn = document.createElement('button');
         editBtn.className = 'small-btn';
-        editBtn.textContent = t.editBtn || 'Edit';
+        editBtn.textContent = getTrans('editBtn');
         editBtn.title = 'Edit Block';
         editBtn.addEventListener('click', () => editBlock(currentCase.id, block.id));
 
@@ -240,8 +293,7 @@ function renderActiveCase() {
 }
 
 document.getElementById('new-folder-btn').addEventListener('click', () => {
-    const t = translations[currentLang] || translations['en'];
-    const name = prompt(t.promptNewFolder || "Folder name:");
+    const name = prompt(getTrans('promptNewFolder'));
     if (name) {
         folders.push({ id: generateId(), name: name.trim(), sharedWith: [] });
         saveState(); renderSidebar();
@@ -249,8 +301,7 @@ document.getElementById('new-folder-btn').addEventListener('click', () => {
 });
 
 function createCase(folderId) {
-    const t = translations[currentLang] || translations['en'];
-    const title = prompt(t.promptNewCase || "Case name:");
+    const title = prompt(getTrans('promptNewCase'));
     if (title) {
         const newCase = { id: generateId(), folderId, title: title.trim(), blocks: [] };
         cases.push(newCase);
@@ -259,7 +310,7 @@ function createCase(folderId) {
 }
 
 function deleteFolder(id) {
-    if (confirm((translations[currentLang]||translations.en).confirmDeleteFolder)) {
+    if (confirm(getTrans('confirmDeleteFolder'))) {
         folders = folders.filter(f => f.id !== id);
         cases = cases.filter(c => c.folderId !== id);
         if(cases.length === 0) activeCaseId = null;
@@ -268,7 +319,7 @@ function deleteFolder(id) {
 }
 
 function deleteCase(id) {
-    if (confirm((translations[currentLang]||translations.en).confirmDeleteCase)) {
+    if (confirm(getTrans('confirmDeleteCase'))) {
         cases = cases.filter(c => c.id !== id);
         if (activeCaseId === id) activeCaseId = cases.length > 0 ? cases[0].id : null;
         saveState(); renderSidebar(); renderActiveCase();
@@ -276,7 +327,7 @@ function deleteCase(id) {
 }
 
 function deleteBlock(caseId, blockId) {
-    if (confirm((translations[currentLang]||translations.en).confirmDeleteBlock)) {
+    if (confirm(getTrans('confirmDeleteBlock'))) {
         const c = cases.find(c => c.id === caseId);
         if (c) {
             c.blocks = c.blocks.filter(b => b.id !== blockId);
@@ -292,8 +343,7 @@ function editBlock(caseId, blockId) {
     if (!block) return;
 
     editingBlockId = block.id;
-    const t = translations[currentLang] || translations['en'];
-    blockModalTitle.textContent = t.editBlockTitle || "Edit Info Block";
+    blockModalTitle.textContent = getTrans('editBlockTitle');
 
     document.getElementById('block-type').value = block.type;
     document.getElementById('block-title').value = block.title;
@@ -434,15 +484,14 @@ document.getElementById('sync-down-btn').addEventListener('click', async () => {
 
 function updateCloudUI() {
     const statusText = document.getElementById('cloud-status');
-    const t = translations[currentLang] || translations['en'];
     
     if (currentUser) {
-        statusText.textContent = `${t.loggedInAs || 'Connected as:'} @${currentUser.username}`;
+        statusText.textContent = `${getTrans('loggedInAs')} @${currentUser.username}`;
         document.getElementById('cloud-login-form').classList.add('hidden');
         document.getElementById('cloud-2fa-form').classList.add('hidden');
         document.getElementById('cloud-actions').classList.remove('hidden');
     } else {
-        statusText.textContent = t.notLoggedIn;
+        statusText.textContent = getTrans('notLoggedIn');
         document.getElementById('cloud-login-form').classList.remove('hidden');
         document.getElementById('cloud-2fa-form').classList.add('hidden');
         document.getElementById('cloud-actions').classList.add('hidden');
@@ -459,10 +508,46 @@ function openShareModal(folderId) {
     document.getElementById('share-username-input').value = '';
     
     const folder = folders.find(f => f.id === folderId);
-    const ul = document.getElementById('shared-users-list');
-    ul.innerHTML = folder && folder.sharedWith.length ? folder.sharedWith.map(id => `<li>ID: ${id}</li>`).join('') : '<li style="color:var(--text-light)">None yet</li>';
+    renderSharedUsersList(folder);
 
     shareModal.classList.remove('hidden');
+}
+
+function renderSharedUsersList(folder) {
+    const ul = document.getElementById('shared-users-list');
+    ul.innerHTML = '';
+    
+    if (!folder || !folder.sharedWith || folder.sharedWith.length === 0) {
+        ul.innerHTML = `<li style="color:var(--text-light)">${getTrans('noneYet')}</li>`;
+        return;
+    }
+
+    folder.sharedWith.forEach(u => {
+        const li = document.createElement('li');
+        li.className = 'shared-user-item';
+        
+        const nameSpan = document.createElement('span');
+        const displayName = typeof u === 'object' ? (u.displayName || u.username) : u;
+        const username = typeof u === 'object' ? u.username : u;
+        nameSpan.textContent = `${displayName} (@${username})`;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'small-btn small-danger';
+        removeBtn.textContent = 'X';
+        removeBtn.addEventListener('click', () => {
+            folder.sharedWith = folder.sharedWith.filter(item => {
+                const itemId = typeof item === 'object' ? (item.userId || item.id) : item;
+                const targetId = typeof u === 'object' ? (u.userId || u.id) : u;
+                return itemId !== targetId;
+            });
+            saveState();
+            renderSharedUsersList(folder);
+        });
+
+        li.appendChild(nameSpan);
+        li.appendChild(removeBtn);
+        ul.appendChild(li);
+    });
 }
 
 let pendingLookupUser = null;
@@ -473,8 +558,12 @@ document.getElementById('lookup-user-btn').addEventListener('click', async () =>
 
     try {
         const user = await apiCall(`/users/lookup?username=${username}`);
-        pendingLookupUser = user;
-        document.getElementById('found-user-display').innerHTML = `Found: <strong>@${user.username}</strong> (ID: ${user.id})`;
+        pendingLookupUser = {
+            userId: user.userId || user.id || user.permanentId,
+            username: user.username,
+            displayName: user.displayName || user.username
+        };
+        document.getElementById('found-user-display').innerHTML = `Found: <strong>${pendingLookupUser.displayName}</strong> (@${pendingLookupUser.username})`;
         document.getElementById('share-result').classList.remove('hidden');
     } catch (e) { alert("User not found or lookup failed."); }
 });
@@ -482,11 +571,19 @@ document.getElementById('lookup-user-btn').addEventListener('click', async () =>
 document.getElementById('add-collaborator-btn').addEventListener('click', () => {
     if(pendingLookupUser && targetShareFolderId) {
         const folder = folders.find(f => f.id === targetShareFolderId);
-        if(folder && !folder.sharedWith.includes(pendingLookupUser.id)) {
-            folder.sharedWith.push(pendingLookupUser.id);
-            saveState();
-            alert(`Added @${pendingLookupUser.username} to folder! Sync UP to save to cloud.`);
-            openShareModal(targetShareFolderId); 
+        if(folder) {
+            const exists = folder.sharedWith.some(u => {
+                const id = typeof u === 'object' ? (u.userId || u.id) : u;
+                return id === pendingLookupUser.userId;
+            });
+
+            if (!exists) {
+                folder.sharedWith.push(pendingLookupUser);
+                saveState();
+                renderSharedUsersList(folder);
+                document.getElementById('share-result').classList.add('hidden');
+                document.getElementById('share-username-input').value = '';
+            }
         }
     }
 });
@@ -497,15 +594,17 @@ document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click
 
 function applyLanguage(lang) {
     currentLang = lang; localStorage.setItem('acm_lang', lang); languageSelect.value = lang;
-    const t = translations[lang] || translations['en'];
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (t[key]) {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = t[key];
-            else el.textContent = t[key];
+        const val = getTrans(key);
+        if (val) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+            else el.textContent = val;
         }
     });
     renderSidebar();
+    if (activeCaseId) renderActiveCase();
+    updateCloudUI();
 }
 languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 
@@ -516,8 +615,7 @@ document.getElementById('theme-toggle-btn').addEventListener('click', () => {
 
 document.getElementById('add-block-btn').addEventListener('click', () => {
     editingBlockId = null;
-    const t = translations[currentLang] || translations['en'];
-    blockModalTitle.textContent = t.createBlockTitle || "Create Info Block";
+    blockModalTitle.textContent = getTrans('createBlockTitle');
     document.getElementById('block-form').reset();
     document.getElementById('custom-fields-container').innerHTML = '';
     document.getElementById('image-preview').classList.add('hidden');
