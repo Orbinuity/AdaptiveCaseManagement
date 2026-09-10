@@ -35,9 +35,22 @@ a:hover { text-decoration: underline; }
 .folder-header { display: flex; justify-content: space-between; align-items: center; background: var(--hover-bg); padding: 8px 10px; border-radius: 5px; font-weight: bold; margin-bottom: 5px;}
 .folder-header span { display: flex; align-items: center; gap: 5px; }
 
-.folder-actions { display: flex; gap: 5px; }
-.small-btn { background: var(--sidebar-bg); border: 1px solid var(--border-color); color: var(--text-dark); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: bold;}
-.small-btn:hover { background: var(--bg-color); }
+.folder-actions { display: flex; gap: 4px; align-items: center; }
+.small-btn {
+    background: var(--sidebar-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.small-btn svg { width: 14px; height: 14px; stroke: currentColor; flex-shrink: 0; }
+.small-btn:hover { background: var(--hover-bg); }
 .small-danger { color: var(--danger-color); }
 .small-danger:hover { background: var(--danger-color); color: white; border-color: var(--danger-color); }
 
@@ -86,9 +99,9 @@ a:hover { text-decoration: underline; }
 .custom-field-input input { flex: 1; }
 .remove-field { background: var(--danger-color); color: white; border: none; padding: 0 10px; cursor: pointer; border-radius: 4px; font-weight: bold;}
 
-.delete-item-btn { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.4; padding-left: 10px; font-weight: bold; color: var(--text-dark); }
+.delete-item-btn { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.4; padding-left: 10px; font-weight: bold; color: var(--text-dark); display: inline-flex; align-items: center; }
 .delete-item-btn:hover { opacity: 1; color: var(--danger-color); }
-.delete-block-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.5; font-weight: bold; color: var(--text-dark); }
+.delete-block-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.5; font-weight: bold; color: var(--text-dark); display: inline-flex; align-items: center; }
 .delete-block-btn:hover { opacity: 1; color: var(--danger-color); }
 
 .share-input-container { display: flex; gap: 10px; align-items: center; width: 100%; }
