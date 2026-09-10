@@ -21,12 +21,16 @@ let orbinuityToken = localStorage.getItem('acm_token') || null;
 let currentUser = JSON.parse(localStorage.getItem('acm_user')) || null;
 let targetShareFolderId = null; 
 let pendingLoginUserId = null; 
+let autoSyncInterval = null;
 
+const authScreen = document.getElementById('auth-screen');
+const appContainer = document.getElementById('app-container');
 const sidebarContent = document.getElementById('sidebar-content');
 const activeCaseView = document.getElementById('active-case-view');
 const noCaseView = document.getElementById('no-case-selected');
 const blocksContainer = document.getElementById('blocks-container');
 const languageSelect = document.getElementById('language-select');
+const authLanguageSelect = document.getElementById('auth-language-select');
 
 const settingsModal = document.getElementById('settings-modal');
 const shareModal = document.getElementById('share-modal');
@@ -51,7 +55,6 @@ const translations = {
         identifier: "Username or Email", password: "Password", loginBtn: "Login to Orbinuity",
         noAccount: "Don't have an account?", makeAccount: "Make one at Orbinuity",
         otpCode: "6-Digit 2FA Code", otpSentDesc: "A code was sent to your email.", verifyBtn: "Verify & Login",
-        syncUp: "Push Data to Cloud", syncDown: "Pull Data from Cloud",
         disconnect: "Disconnect", notLoggedIn: "Not connected.", loggedInAs: "Connected as:",
         shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them.",
         search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:", shareBtn: "Share", addCaseBtn: "+ Case",
@@ -70,7 +73,6 @@ const translations = {
         identifier: "Gebruikersnaam of E-mail", password: "Wachtwoord", loginBtn: "Inloggen bij Orbinuity",
         noAccount: "Nog geen account?", makeAccount: "Maak er een aan bij Orbinuity",
         otpCode: "6-Cijferige 2FA Code", otpSentDesc: "Er is een code naar je e-mail gestuurd.", verifyBtn: "Verifiëren & Inloggen",
-        syncUp: "Push naar Cloud", syncDown: "Pull van Cloud",
         disconnect: "Uitloggen", notLoggedIn: "Niet verbonden.", loggedInAs: "Ingelogd als:",
         shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen.",
         search: "Zoeken", addUser: "Gebruiker Toevoegen", sharedWithTitle: "Gedeeld Met:", shareBtn: "Delen", addCaseBtn: "+ Zaak",
@@ -89,7 +91,6 @@ const translations = {
         identifier: "Usuario o Email", password: "Contraseña", loginBtn: "Iniciar Sesión",
         noAccount: "¿No tienes cuenta?", makeAccount: "Crea una en Orbinuity",
         otpCode: "Código 2FA de 6 dígitos", otpSentDesc: "Se ha enviado un código a tu correo.", verifyBtn: "Verificar e Iniciar",
-        syncUp: "Subir a la Nube", syncDown: "Descargar de la Nube",
         disconnect: "Desconectar", notLoggedIn: "No conectado.", loggedInAs: "Conectado como:",
         shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity.",
         search: "Buscar", addUser: "Añadir Usuario", sharedWithTitle: "Compartido Con:", shareBtn: "Compartir", addCaseBtn: "+ Caso",
@@ -108,7 +109,6 @@ const translations = {
         identifier: "Nom d'utilisateur ou Email", password: "Mot de passe", loginBtn: "Se connecter",
         noAccount: "Pas encore de compte ?", makeAccount: "Créer un compte sur Orbinuity",
         otpCode: "Code 2FA à 6 chiffres", otpSentDesc: "Un code a été envoyé par email.", verifyBtn: "Vérifier & Connexion",
-        syncUp: "Envoyer vers la Cloud", syncDown: "Télécharger de la Cloud",
         disconnect: "Déconnexion", notLoggedIn: "Non connecté.", loggedInAs: "Connecté en tant que :",
         shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity.",
         search: "Rechercher", addUser: "Ajouter L'utilisateur", sharedWithTitle: "Partagé Avec :", shareBtn: "Partager", addCaseBtn: "+ Cas",
@@ -127,7 +127,6 @@ const translations = {
         identifier: "Benutzername oder E-Mail", password: "Passwort", loginBtn: "Anmelden",
         noAccount: "Noch kein Konto?", makeAccount: "Bei Orbinuity erstellen",
         otpCode: "6-stelliger 2FA-Code", otpSentDesc: "Ein Code wurde an Ihre E-Mail gesendet.", verifyBtn: "Bestätigen & Anmelden",
-        syncUp: "In die Cloud Hochladen", syncDown: "Aus der Cloud Laden",
         disconnect: "Trennen", notLoggedIn: "Nicht verbunden.", loggedInAs: "Angemeldet als:",
         shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen.",
         search: "Suchen", addUser: "Hinzufügen", sharedWithTitle: "Geteilt Mit:", shareBtn: "Teilen", addCaseBtn: "+ Fall",
@@ -141,17 +140,35 @@ function getTrans(key) {
     return (translations[currentLang] && translations[currentLang][key]) || translations['en'][key] || '';
 }
 
-function init() {
+function getTypeLabel(type) {
+    if (type === 'person') return getTrans('typePerson');
+    if (type === 'general') return getTrans('typeGeneral');
+    if (type === 'location') return getTrans('typeLocation');
+    return type;
+}
+
+async function init() {
     applyTheme(currentTheme);
     applyLanguage(currentLang);
-    renderSidebar();
-    updateCloudUI();
-    if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
+
+    if (orbinuityToken && currentUser) {
+        authScreen.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        renderSidebar();
+        updateCloudUI();
+        await autoPullCloud();
+        startAutoSyncTimer();
+        if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
+    } else {
+        authScreen.classList.remove('hidden');
+        appContainer.classList.add('hidden');
+    }
 }
 
 function saveState() {
     localStorage.setItem('acm_folders', JSON.stringify(folders));
     localStorage.setItem('acm_cases', JSON.stringify(cases));
+    autoPushCloud();
 }
 
 function renderSidebar() {
@@ -296,9 +313,11 @@ function renderActiveCase() {
         let fieldsHTML = block.customFields.map(f => `<div class="custom-field-display"><strong>${f.key}:</strong> <span>${f.value}</span></div>`).join('');
         const imgHTML = block.image ? `<img src="${block.image}" class="info-card-img">` : `<div class="info-card-img">${block.title.substring(0,2).toUpperCase()}</div>`;
 
+        const typeText = getTypeLabel(block.type).toUpperCase();
+
         const headerDiv = document.createElement('div');
         headerDiv.className = 'info-card-header';
-        headerDiv.innerHTML = `${imgHTML}<div><h3>${block.title}</h3><span class="info-type">${block.type.toUpperCase()}</span></div>`;
+        headerDiv.innerHTML = `${imgHTML}<div><h3>${block.title}</h3><span class="info-type">${typeText}</span></div>`;
         card.appendChild(headerDiv);
 
         if(block.description) {
@@ -456,6 +475,36 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     return res.json();
 }
 
+async function autoPushCloud() {
+    if (!orbinuityToken) return;
+    try {
+        const payload = { folders, cases };
+        await apiCall('/external/acm_app', 'PUT', payload);
+    } catch (e) {}
+}
+
+async function autoPullCloud() {
+    if (!orbinuityToken) return;
+    try {
+        const data = await apiCall('/external/acm_app', 'GET');
+        if (data && data.folders && data.cases) {
+            folders = data.folders;
+            cases = data.cases;
+            localStorage.setItem('acm_folders', JSON.stringify(folders));
+            localStorage.setItem('acm_cases', JSON.stringify(cases));
+            renderSidebar();
+            if (activeCaseId) renderActiveCase();
+        }
+    } catch (e) {}
+}
+
+function startAutoSyncTimer() {
+    if (autoSyncInterval) clearInterval(autoSyncInterval);
+    autoSyncInterval = setInterval(() => {
+        if (orbinuityToken) autoPullCloud();
+    }, 10000);
+}
+
 document.getElementById('cloud-login-btn').addEventListener('click', async () => {
     const identifier = document.getElementById('login-identifier').value.trim();
     const password = document.getElementById('login-password').value.trim();
@@ -516,8 +565,12 @@ async function finalizeLogin(tokenObject) {
         localStorage.setItem('acm_user', JSON.stringify(profile));
         currentUser = profile;
         pendingLoginUserId = null;
+        authScreen.classList.add('hidden');
+        appContainer.classList.remove('hidden');
         updateCloudUI();
-        alert(`Connected as @${profile.username}`);
+        await autoPullCloud();
+        startAutoSyncTimer();
+        if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
     } catch (e) {
         orbinuityToken = null;
         localStorage.removeItem('acm_token');
@@ -526,49 +579,27 @@ async function finalizeLogin(tokenObject) {
 }
 
 document.getElementById('cloud-logout-btn').addEventListener('click', () => {
-    orbinuityToken = null; currentUser = null;
-    localStorage.removeItem('acm_token'); localStorage.removeItem('acm_user');
-    updateCloudUI();
-});
-
-document.getElementById('sync-up-btn').addEventListener('click', async () => {
-    try {
-        const payload = { folders, cases };
-        await apiCall('/external/acm_app', 'PUT', payload);
-        alert("Successfully pushed to Orbinuity Cloud!");
-    } catch (e) { alert("Sync UP failed: " + e.message); }
-});
-
-document.getElementById('sync-down-btn').addEventListener('click', async () => {
-    try {
-        const data = await apiCall('/external/acm_app', 'GET'); 
-        if(data && data.folders && data.cases) {
-            folders = data.folders; cases = data.cases;
-            saveState(); init();
-            alert("Successfully pulled from Cloud!");
-        } else {
-            alert("No existing cloud data found for ACM.");
-        }
-    } catch (e) { alert("Sync DOWN failed: " + e.message); }
+    if (autoSyncInterval) clearInterval(autoSyncInterval);
+    orbinuityToken = null; 
+    currentUser = null;
+    localStorage.removeItem('acm_token'); 
+    localStorage.removeItem('acm_user');
+    authScreen.classList.remove('hidden');
+    appContainer.classList.add('hidden');
+    settingsModal.classList.add('hidden');
+    document.getElementById('cloud-login-form').classList.remove('hidden');
+    document.getElementById('cloud-2fa-form').classList.add('hidden');
+    document.getElementById('login-identifier').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-otp').value = '';
 });
 
 function updateCloudUI() {
     const statusText = document.getElementById('cloud-status');
-    
     if (currentUser) {
         statusText.textContent = `${getTrans('loggedInAs')} @${currentUser.username}`;
-        document.getElementById('cloud-login-form').classList.add('hidden');
-        document.getElementById('cloud-2fa-form').classList.add('hidden');
-        document.getElementById('cloud-actions').classList.remove('hidden');
     } else {
         statusText.textContent = getTrans('notLoggedIn');
-        document.getElementById('cloud-login-form').classList.remove('hidden');
-        document.getElementById('cloud-2fa-form').classList.add('hidden');
-        document.getElementById('cloud-actions').classList.add('hidden');
-        
-        document.getElementById('login-identifier').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('login-otp').value = '';
     }
 }
 
@@ -622,7 +653,7 @@ function renderSharedUsersList(folder) {
 
 let pendingLookupUser = null;
 document.getElementById('lookup-user-btn').addEventListener('click', async () => {
-    if(!orbinuityToken) return alert("You must connect to Orbinuity Cloud first in Settings.");
+    if(!orbinuityToken) return alert("You must connect to Orbinuity Cloud first.");
     const username = document.getElementById('share-username-input').value.replace('@','').trim();
     if(!username) return;
 
@@ -664,7 +695,7 @@ document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click
 document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
 
 function applyLanguage(lang) {
-    currentLang = lang; localStorage.setItem('acm_lang', lang); languageSelect.value = lang;
+    currentLang = lang; localStorage.setItem('acm_lang', lang); languageSelect.value = lang; authLanguageSelect.value = lang;
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         const val = getTrans(key);
@@ -678,6 +709,7 @@ function applyLanguage(lang) {
     updateCloudUI();
 }
 languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
+authLanguageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 
 function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('acm_theme', theme); }
 document.getElementById('theme-toggle-btn').addEventListener('click', () => {
