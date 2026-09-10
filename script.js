@@ -69,7 +69,7 @@ const translations = {
         appTitle: "ACM System", defaultFolder: "My Cases", newFolder: "+ New Folder", emptyState: "Select or create a case to begin",
         addInfoBlock: "+ Add Info Block", createBlockTitle: "Create Info Block", editBlockTitle: "Edit Info Block", editBtn: "Edit",
         blockType: "Block Type", typePerson: "Person / Subject", typeGeneral: "General Information", typeLocation: "Location",
-        titleName: "Title / Name", picture: "Picture", description: "Description",
+        titleName: "Title / Name", picture: "Picture / Image", description: "Description",
         additionalInfo: "Custom Fields", addCustomField: "+ Add Custom Field", saveBlock: "Save Info Block",
         settingsTitle: "Settings", settingsBtn: "Settings", appearance: "Appearance & Localization", language: "Language",
         toggleTheme: "Toggle Theme", cloudSyncTitle: "Orbinuity Cloud Sync",
@@ -77,11 +77,18 @@ const translations = {
         noAccount: "Don't have an account?", makeAccount: "Make one at Orbinuity",
         otpCode: "6-Digit 2FA Code", otpSentDesc: "A code was sent to your email.", verifyBtn: "Verify & Login",
         disconnect: "Disconnect", notLoggedIn: "Not connected.", loggedInAs: "Connected as:",
-        shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them.",
+        shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them to this folder.",
         search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:", shareBtn: "Share", addCaseBtn: "+ Case",
-        promptNewFolder: "Enter Folder Name:", noneYet: "None yet",
+        promptNewFolder: "Enter Folder Name:", promptRenameFolder: "Enter new folder name:", renameBtn: "Rename", noneYet: "None yet",
         editCaseBtn: "Edit Case", createCaseTitle: "Create Case", editCaseTitle: "Edit Case", saveCase: "Save Case",
-        confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?"
+        confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?",
+        titlePlaceholder: "Case Name", descPlaceholder: "Case description...", keyPlaceholder: "Key", valPlaceholder: "Value",
+        usernamePlaceholder: "@username", loginIdentifierPlaceholder: "username / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        alertLoginReq: "Enter identifier and password.", alert2faReq: "Enter 2FA Code.", alertInvalid2fa: "Invalid 2FA code.",
+        alertLoginFail: "Login failed. Please check your credentials.", alertProfileFail: "Failed to load user profile after login.",
+        alertAddMemberSuccess: "Added user successfully.", alertAddMemberFail: "Failed to add member to room. Make sure username is correct.",
+        alertCloudConnectReq: "You must connect to Orbinuity Cloud first.", alertCreateFolderFail: "Could not create folder on server. Please try again.",
+        alertRenameRoomFail: "Failed to update room name on server."
     },
     nl: {
         appTitle: "ACM Systeem", defaultFolder: "Mijn Zaken", newFolder: "+ Nieuwe Map", emptyState: "Selecteer een zaak om te beginnen",
@@ -95,11 +102,18 @@ const translations = {
         noAccount: "Nog geen account?", makeAccount: "Maak er een aan bij Orbinuity",
         otpCode: "6-Cijferige 2FA Code", otpSentDesc: "Er is een code naar je e-mail gestuurd.", verifyBtn: "Verifiëren & Inloggen",
         disconnect: "Uitloggen", notLoggedIn: "Niet verbonden.", loggedInAs: "Ingelogd als:",
-        shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen.",
+        shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen voor deze map.",
         search: "Zoeken", addUser: "Gebruiker Toevoegen", sharedWithTitle: "Gedeeld Met:", shareBtn: "Delen", addCaseBtn: "+ Zaak",
-        promptNewFolder: "Voer mapnaam in:", noneYet: "Nog niemand",
+        promptNewFolder: "Voer mapnaam in:", promptRenameFolder: "Voer nieuwe mapnaam in:", renameBtn: "Hernoemen", noneYet: "Nog niemand",
         editCaseBtn: "Zaak Bewerken", createCaseTitle: "Zaak Aanmaken", editCaseTitle: "Zaak Bewerken", saveCase: "Zaak Opslaan",
-        confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?"
+        confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?",
+        titlePlaceholder: "Zaaknaam", descPlaceholder: "Zaak beschrijving...", keyPlaceholder: "Sleutel", valPlaceholder: "Waarde",
+        usernamePlaceholder: "@gebruikersnaam", loginIdentifierPlaceholder: "gebruikersnaam / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        alertLoginReq: "Voer gebruikersnaam/e-mail en wachtwoord in.", alert2faReq: "Voer 2FA-code in.", alertInvalid2fa: "Ongeldige 2FA-code.",
+        alertLoginFail: "Inloggen mislukt. Controleer uw gegevens.", alertProfileFail: "Laden van gebruikersprofiel mislukt na inloggen.",
+        alertAddMemberSuccess: "Gebruiker succesvol toegevoegd.", alertAddMemberFail: "Toevoegen van lid mislukt. Controleer de gebruikersnaam.",
+        alertCloudConnectReq: "U moet eerst verbinden met Orbinuity Cloud.", alertCreateFolderFail: "Kon map niet aanmaken op de server. Probeer het opnieuw.",
+        alertRenameRoomFail: "Bijwerken van mapnaam op de server mislukt."
     },
     es: {
         appTitle: "Sistema ACM", defaultFolder: "Mis Casos", newFolder: "+ Nueva Carpeta", emptyState: "Seleccione un caso para comenzar",
@@ -113,11 +127,18 @@ const translations = {
         noAccount: "¿No tienes cuenta?", makeAccount: "Crea una en Orbinuity",
         otpCode: "Código 2FA de 6 dígitos", otpSentDesc: "Se ha enviado un código a tu correo.", verifyBtn: "Verificar e Iniciar",
         disconnect: "Desconectar", notLoggedIn: "No conectado.", loggedInAs: "Conectado como:",
-        shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity.",
+        shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity para invitarlo a esta carpeta.",
         search: "Buscar", addUser: "Añadir Usuario", sharedWithTitle: "Compartido Con:", shareBtn: "Compartir", addCaseBtn: "+ Caso",
-        promptNewFolder: "Nombre de la carpeta:", noneYet: "Aún nadie",
+        promptNewFolder: "Nombre de la carpeta:", promptRenameFolder: "Ingrese el nuevo nombre de la carpeta:", renameBtn: "Renombrar", noneYet: "Aún nadie",
         editCaseBtn: "Editar Caso", createCaseTitle: "Crear Caso", editCaseTitle: "Editar Caso", saveCase: "Guardar Caso",
-        confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?"
+        confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?",
+        titlePlaceholder: "Nombre del Caso", descPlaceholder: "Descripción del caso...", keyPlaceholder: "Clave", valPlaceholder: "Valor",
+        usernamePlaceholder: "@usuario", loginIdentifierPlaceholder: "usuario / correo", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        alertLoginReq: "Ingrese usuario y contraseña.", alert2faReq: "Ingrese el código 2FA.", alertInvalid2fa: "Código 2FA inválido.",
+        alertLoginFail: "Error de inicio de sesión. Verifique sus credenciales.", alertProfileFail: "Error al cargar el perfil de usuario después de iniciar sesión.",
+        alertAddMemberSuccess: "Usuario añadido con éxito.", alertAddMemberFail: "Error al añadir miembro. Verifique el nombre de usuario.",
+        alertCloudConnectReq: "Primero debe conectarse a Orbinuity Cloud.", alertCreateFolderFail: "No se pudo crear la carpeta en el servidor. Inténtelo de nuevo.",
+        alertRenameRoomFail: "Error al actualizar el nombre de la carpeta en el servidor."
     },
     fr: {
         appTitle: "Système ACM", defaultFolder: "Mes Dossiers", newFolder: "+ Nouveau Dossier", emptyState: "Sélectionnez un cas pour commencer",
@@ -131,11 +152,18 @@ const translations = {
         noAccount: "Pas encore de compte ?", makeAccount: "Créer un compte sur Orbinuity",
         otpCode: "Code 2FA à 6 chiffres", otpSentDesc: "Un code a été envoyé par email.", verifyBtn: "Vérifier & Connexion",
         disconnect: "Déconnexion", notLoggedIn: "Non connecté.", loggedInAs: "Connecté en tant que :",
-        shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity.",
+        shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity pour l'inviter dans ce dossier.",
         search: "Rechercher", addUser: "Ajouter L'utilisateur", sharedWithTitle: "Partagé Avec :", shareBtn: "Partager", addCaseBtn: "+ Cas",
-        promptNewFolder: "Nom du dossier :", noneYet: "Aucun pour le moment",
+        promptNewFolder: "Nom du dossier :", promptRenameFolder: "Entrez le nouveau nom du dossier :", renameBtn: "Renommer", noneYet: "Aucun pour le moment",
         editCaseBtn: "Modifier le Cas", createCaseTitle: "Créer un Cas", editCaseTitle: "Modifier le Cas", saveCase: "Enregistrer",
-        confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?"
+        confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?",
+        titlePlaceholder: "Nom du Cas", descPlaceholder: "Description du cas...", keyPlaceholder: "Clé", valPlaceholder: "Valeur",
+        usernamePlaceholder: "@utilisateur", loginIdentifierPlaceholder: "nom d'utilisateur / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        alertLoginReq: "Veuillez saisir votre identifiant et votre mot de passe.", alert2faReq: "Veuillez saisir le code 2FA.", alertInvalid2fa: "Code 2FA invalide.",
+        alertLoginFail: "Échec de la connexion. Veuillez vérifier vos identifiants.", alertProfileFail: "Échec du chargement du profil utilisateur après la connexion.",
+        alertAddMemberSuccess: "Utilisateur ajouté avec succès.", alertAddMemberFail: "Échec de l'ajout du membre. Vérifiez le nom d'utilisateur.",
+        alertCloudConnectReq: "Vous devez d'abord vous connecter à Orbinuity Cloud.", alertCreateFolderFail: "Impossible de créer le dossier sur le serveur. Veuillez réessayer.",
+        alertRenameRoomFail: "Échec de la mise à jour du nom du dossier sur le serveur."
     },
     de: {
         appTitle: "ACM-System", defaultFolder: "Meine Fälle", newFolder: "+ Neuer Ordner", emptyState: "Fall auswählen um zu beginnen",
@@ -149,11 +177,18 @@ const translations = {
         noAccount: "Noch kein Konto?", makeAccount: "Bei Orbinuity erstellen",
         otpCode: "6-stelliger 2FA-Code", otpSentDesc: "Ein Code wurde an Ihre E-Mail gesendet.", verifyBtn: "Bestätigen & Anmelden",
         disconnect: "Trennen", notLoggedIn: "Nicht verbunden.", loggedInAs: "Angemeldet als:",
-        shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen.",
+        shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen, um ihn zu diesem Ordner einzuladen.",
         search: "Suchen", addUser: "Hinzufügen", sharedWithTitle: "Geteilt Mit:", shareBtn: "Teilen", addCaseBtn: "+ Fall",
-        promptNewFolder: "Ordnername:", noneYet: "Noch niemand",
+        promptNewFolder: "Ordnername:", promptRenameFolder: "Neuen Ordnernamen eingeben:", renameBtn: "Umbenennen", noneYet: "Noch niemand",
         editCaseBtn: "Fall Bearbeiten", createCaseTitle: "Fall Erstellen", editCaseTitle: "Fall Bearbeiten", saveCase: "Fall Speichern",
-        confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?"
+        confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?",
+        titlePlaceholder: "Fallname", descPlaceholder: "Fallbeschreibung...", keyPlaceholder: "Schlüssel", valPlaceholder: "Wert",
+        usernamePlaceholder: "@benutzername", loginIdentifierPlaceholder: "benutzername / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        alertLoginReq: "Benutzername und Passwort eingeben.", alert2faReq: "2FA-Code eingeben.", alertInvalid2fa: "Ungültiger 2FA-Code.",
+        alertLoginFail: "Anmeldung fehlgeschlagen. Bitte Anmeldedaten überprüfen.", alertProfileFail: "Profil konnte nach der Anmeldung nicht geladen werden.",
+        alertAddMemberSuccess: "Benutzer erfolgreich hinzugefügt.", alertAddMemberFail: "Mitglied konnte nicht hinzugefügt werden. Benutzernamen überprüfen.",
+        alertCloudConnectReq: "Sie müssen sich zuerst mit Orbinuity Cloud verbinden.", alertCreateFolderFail: "Ordner konnte auf dem Server nicht erstellt werden. Bitte erneut versuchen.",
+        alertRenameRoomFail: "Ordnername konnte auf dem Server nicht aktualisiert werden."
     }
 };
 
@@ -214,10 +249,20 @@ function renderSidebar() {
         actionsDiv.className = 'folder-actions';
         
         if (folder.id !== 'default') {
+            const renameBtn = document.createElement('button');
+            renameBtn.className = 'small-btn';
+            renameBtn.textContent = getTrans('renameBtn');
+            renameBtn.title = getTrans('renameBtn');
+            renameBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                renameFolder(folder.id, folder.name);
+            });
+            actionsDiv.appendChild(renameBtn);
+
             const shareBtn = document.createElement('button');
             shareBtn.className = 'small-btn';
             shareBtn.textContent = getTrans('shareBtn');
-            shareBtn.title = 'Share Folder';
+            shareBtn.title = getTrans('shareFolderTitle');
             shareBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 openShareModal(folder.id);
@@ -228,7 +273,7 @@ function renderSidebar() {
         const addCaseBtn = document.createElement('button');
         addCaseBtn.className = 'small-btn';
         addCaseBtn.textContent = getTrans('addCaseBtn');
-        addCaseBtn.title = 'Add Case';
+        addCaseBtn.title = getTrans('addCaseBtn');
         addCaseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             createCase(folder.id);
@@ -239,7 +284,7 @@ function renderSidebar() {
             const delFolderBtn = document.createElement('button');
             delFolderBtn.className = 'small-btn small-danger';
             delFolderBtn.textContent = 'X';
-            delFolderBtn.title = 'Delete Folder';
+            delFolderBtn.title = 'X';
             delFolderBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteFolder(folder.id);
@@ -266,7 +311,7 @@ function renderSidebar() {
             const delCaseBtn = document.createElement('button');
             delCaseBtn.className = 'delete-item-btn';
             delCaseBtn.textContent = 'X';
-            delCaseBtn.title = 'Delete Case';
+            delCaseBtn.title = 'X';
             delCaseBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteCase(c.id);
@@ -281,6 +326,32 @@ function renderSidebar() {
         folderDiv.appendChild(ul);
         sidebarContent.appendChild(folderDiv);
     });
+}
+
+async function renameFolder(id, currentName) {
+    const newName = prompt(getTrans('promptRenameFolder'), currentName);
+    if (!newName || !newName.trim() || newName.trim() === currentName) return;
+
+    const cleanName = newName.trim();
+
+    if (id.startsWith('room_')) {
+        if (orbinuityToken) {
+            try {
+                await apiCall(`/external/rooms/${id}`, 'PUT', { name: cleanName });
+            } catch (e) {
+                alert(getTrans('alertRenameRoomFail'));
+                return;
+            }
+        }
+    }
+
+    const folder = folders.find(f => f.id === id);
+    if (folder) {
+        folder.name = cleanName;
+    }
+
+    await saveState();
+    renderSidebar();
 }
 
 function selectCase(id) {
@@ -323,13 +394,13 @@ function renderActiveCase() {
         const editBtn = document.createElement('button');
         editBtn.className = 'small-btn';
         editBtn.textContent = getTrans('editBtn');
-        editBtn.title = 'Edit Block';
+        editBtn.title = getTrans('editBtn');
         editBtn.addEventListener('click', () => editBlock(currentCase.id, block.id));
 
         const delBtn = document.createElement('button');
         delBtn.className = 'delete-block-btn';
         delBtn.textContent = 'X';
-        delBtn.title = 'Delete Block';
+        delBtn.title = 'X';
         delBtn.addEventListener('click', () => deleteBlock(currentCase.id, block.id));
 
         cardActions.appendChild(editBtn);
@@ -389,8 +460,7 @@ document.getElementById('new-folder-btn').addEventListener('click', async () => 
                 return;
             }
         } catch (e) {
-            console.error("Failed to create folder on server:", e);
-            alert("Could not create folder on server. Please try again.");
+            alert(getTrans('alertCreateFolderFail'));
             return;
         }
     }
@@ -516,7 +586,9 @@ function editBlock(caseId, blockId) {
 function addCustomFieldRow(key = '', val = '') {
     const div = document.createElement('div');
     div.className = 'custom-field-input';
-    div.innerHTML = `<input type="text" placeholder="Key" class="field-key" value="${key}" required><input type="text" placeholder="Value" class="field-val" value="${val}" required><button type="button" class="remove-field" title="Remove">X</button>`;
+    const keyPh = getTrans('keyPlaceholder');
+    const valPh = getTrans('valPlaceholder');
+    div.innerHTML = `<input type="text" placeholder="${keyPh}" class="field-key" value="${key}" required><input type="text" placeholder="${valPh}" class="field-val" value="${val}" required><button type="button" class="remove-field" title="Remove">X</button>`;
     div.querySelector('.remove-field').addEventListener('click', () => div.remove());
     document.getElementById('custom-fields-container').appendChild(div);
 }
@@ -548,9 +620,7 @@ async function autoPushCloud() {
             }
         };
         await apiCall(`/external/${APP_ID}`, 'PUT', payload);
-    } catch (e) {
-        console.error("AutoPush failed:", e);
-    }
+    } catch (e) {}
 }
 
 async function autoPullCloud() {
@@ -566,18 +636,21 @@ async function autoPullCloud() {
                     members: r.members || []
                 }));
             }
-        } catch (e) {
-            console.warn("Failed to fetch room folders:", e);
-        }
+        } catch (e) {}
 
         let res = null;
         try {
             res = await apiCall(`/external/${APP_ID}`, 'GET');
-        } catch (e) {
-            console.warn("Failed to fetch app storage:", e);
-        }
+        } catch (e) {}
 
         const data = res ? (res.data || res.payload || res.storage || res) : null;
+        const folderMap = new Map();
+
+        folders.forEach(f => {
+            if (f.id) folderMap.set(f.id, f);
+        });
+
+        folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
 
         if (data && (data.cases || data.folders || data.settings)) {
             if (Array.isArray(data.cases)) {
@@ -585,22 +658,7 @@ async function autoPullCloud() {
             }
 
             let cloudFolders = Array.isArray(data.folders) ? data.folders : [];
-            const defaultFolder = cloudFolders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
-
-            const folderMap = new Map();
-
-            folders.forEach(f => {
-                if (f.id && f.id.startsWith('room_')) {
-                    folderMap.set(f.id, f);
-                }
-            });
-
-            folderMap.set('default', defaultFolder);
-            cloudFolders.forEach(f => { if (f.id) folderMap.set(f.id, f); });
-
-            roomFolders.forEach(r => { if (r.id) folderMap.set(r.id, r); });
-
-            folders = Array.from(folderMap.values());
+            cloudFolders.forEach(f => { if (f && f.id) folderMap.set(f.id, f); });
 
             if (data.settings) {
                 if (data.settings.theme && data.settings.theme !== currentTheme) {
@@ -613,20 +671,16 @@ async function autoPullCloud() {
                 }
             }
         } else if (res === null) {
-            const folderMap = new Map();
-
-            folders.forEach(f => {
-                if (f.id && f.id.startsWith('room_')) {
-                    folderMap.set(f.id, f);
-                }
-            });
-
-            folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
-            roomFolders.forEach(r => { if (r.id) folderMap.set(r.id, r); });
-            folders = Array.from(folderMap.values());
-
             await autoPushCloud();
         }
+
+        roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
+
+        folders = Array.from(folderMap.values()).sort((a, b) => {
+            if (a.id === 'default') return -1;
+            if (b.id === 'default') return 1;
+            return 0;
+        });
 
         renderSidebar();
         if (activeCaseId && cases.some(c => c.id === activeCaseId)) {
@@ -637,9 +691,7 @@ async function autoPullCloud() {
             activeCaseId = null;
             renderActiveCase();
         }
-    } catch (e) {
-        console.error("AutoPull error:", e);
-    }
+    } catch (e) {}
 }
 
 function startAutoSyncTimer() {
@@ -653,7 +705,7 @@ document.getElementById('cloud-login-btn').addEventListener('click', async () =>
     const identifier = document.getElementById('login-identifier').value.trim();
     const password = document.getElementById('login-password').value.trim();
     
-    if(!identifier || !password) return alert("Enter identifier and password.");
+    if(!identifier || !password) return alert(getTrans('alertLoginReq'));
     
     try {
         const res = await fetch(`${API_BASE}/auth/login`, {
@@ -662,7 +714,7 @@ document.getElementById('cloud-login-btn').addEventListener('click', async () =>
             body: JSON.stringify({ identifier, password })
         });
         
-        if (!res.ok) throw new Error("Login failed. Please check your credentials.");
+        if (!res.ok) throw new Error(getTrans('alertLoginFail'));
         
         const data = await res.json();
         
@@ -681,7 +733,7 @@ document.getElementById('cloud-login-btn').addEventListener('click', async () =>
 
 document.getElementById('cloud-verify-btn').addEventListener('click', async () => {
     const code = document.getElementById('login-otp').value.trim();
-    if(!code || !pendingLoginUserId) return alert("Enter 2FA Code.");
+    if(!code || !pendingLoginUserId) return alert(getTrans('alert2faReq'));
 
     try {
         const res = await fetch(`${API_BASE}/auth/login/2fa`, {
@@ -690,7 +742,7 @@ document.getElementById('cloud-verify-btn').addEventListener('click', async () =
             body: JSON.stringify({ userId: pendingLoginUserId, code })
         });
         
-        if (!res.ok) throw new Error("Invalid 2FA code.");
+        if (!res.ok) throw new Error(getTrans('alertInvalid2fa'));
         
         const data = await res.json();
         await finalizeLogin(data.token || data);
@@ -716,7 +768,7 @@ async function finalizeLogin(tokenObject) {
     } catch (e) {
         orbinuityToken = null;
         eraseCookie('acm_token');
-        alert("Failed to load user profile after login.");
+        alert(getTrans('alertProfileFail'));
     }
 }
 
@@ -788,19 +840,19 @@ function renderSharedUsersList(folder) {
 }
 
 document.getElementById('add-member-btn').addEventListener('click', async () => {
-    if(!orbinuityToken) return alert("You must connect to Orbinuity Cloud first.");
+    if(!orbinuityToken) return alert(getTrans('alertCloudConnectReq'));
     const username = document.getElementById('share-username-input').value.replace('@','').trim();
     if(!username || !targetShareFolderId) return;
 
     try {
         const res = await apiCall(`/external/rooms/${targetShareFolderId}/members`, 'POST', { username });
-        alert(res.message || "Added user successfully.");
+        alert(res.message || getTrans('alertAddMemberSuccess'));
         document.getElementById('share-username-input').value = '';
         await autoPullCloud();
         const updatedFolder = folders.find(f => f.id === targetShareFolderId);
         renderSharedUsersList(updatedFolder);
     } catch (e) { 
-        alert("Failed to add member to room. Make sure username is correct."); 
+        alert(getTrans('alertAddMemberFail')); 
     }
 });
 
