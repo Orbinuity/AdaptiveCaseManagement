@@ -169,6 +169,9 @@ function getTypeLabel(type) {
 }
 
 async function init() {
+    applyTheme(currentTheme);
+    applyLanguage(currentLang, false);
+
     if (orbinuityToken) {
         try {
             currentUser = await apiCall('/account/me');
@@ -177,7 +180,6 @@ async function init() {
             updateCloudUI();
             await autoPullCloud();
             startAutoSyncTimer();
-            if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
         } catch (e) {
             eraseCookie('acm_token');
             orbinuityToken = null;
@@ -531,22 +533,15 @@ async function autoPushCloud() {
 async function autoPullCloud() {
     if (!orbinuityToken) return;
     try {
-        const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
-        if (roomData && roomData.rooms) {
-            const fetchedRooms = roomData.rooms.map(r => ({
-                id: r.id,
-                name: r.name,
-                members: r.members || []
-            }));
-
-            const defaultFolder = folders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
-            folders = [defaultFolder, ...fetchedRooms];
-        }
-
+        let cloudFolders = [];
         const data = await apiCall(`/external/${APP_ID}`, 'GET');
+        
         if (data) {
             if (data.cases) {
                 cases = data.cases;
+            }
+            if (data.folders) {
+                cloudFolders = data.folders;
             }
             if (data.settings) {
                 if (data.settings.theme && data.settings.theme !== currentTheme) {
@@ -555,13 +550,48 @@ async function autoPullCloud() {
                 }
                 if (data.settings.lang && data.settings.lang !== currentLang) {
                     currentLang = data.settings.lang;
-                    applyLanguage(currentLang);
+                    applyLanguage(currentLang, false);
                 }
             }
         }
 
+        try {
+            const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
+            if (roomData && roomData.rooms) {
+                const fetchedRooms = roomData.rooms.map(r => ({
+                    id: r.id,
+                    name: r.name,
+                    members: r.members || []
+                }));
+
+                const defaultFolder = cloudFolders.find(f => f.id === 'default') || 
+                                      folders.find(f => f.id === 'default') || 
+                                      { id: 'default', name: 'My Cases', members: [] };
+
+                const folderMap = new Map();
+                folderMap.set('default', defaultFolder);
+                cloudFolders.forEach(f => folderMap.set(f.id, f));
+                fetchedRooms.forEach(r => folderMap.set(r.id, r));
+
+                folders = Array.from(folderMap.values());
+            } else if (cloudFolders.length > 0) {
+                folders = cloudFolders;
+            }
+        } catch (e) {
+            if (cloudFolders.length > 0) {
+                folders = cloudFolders;
+            }
+        }
+
         renderSidebar();
-        if (activeCaseId) renderActiveCase();
+        if (activeCaseId && cases.some(c => c.id === activeCaseId)) {
+            renderActiveCase();
+        } else if (cases.length > 0) {
+            selectCase(cases[0].id);
+        } else {
+            activeCaseId = null;
+            renderActiveCase();
+        }
     } catch (e) {}
 }
 
@@ -636,7 +666,6 @@ async function finalizeLogin(tokenObject) {
         updateCloudUI();
         await autoPullCloud();
         startAutoSyncTimer();
-        if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
     } catch (e) {
         orbinuityToken = null;
         eraseCookie('acm_token');
@@ -733,7 +762,7 @@ document.querySelectorAll('.close-settings').forEach(b => b.addEventListener('cl
 document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click', () => shareModal.classList.add('hidden')));
 document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
 
-function applyLanguage(lang) {
+function applyLanguage(lang, save = true) {
     currentLang = lang; 
     languageSelect.value = lang; 
     authLanguageSelect.value = lang;
@@ -748,7 +777,7 @@ function applyLanguage(lang) {
     renderSidebar();
     if (activeCaseId) renderActiveCase();
     updateCloudUI();
-    autoPushCloud();
+    if (save) autoPushCloud();
 }
 languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 authLanguageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
