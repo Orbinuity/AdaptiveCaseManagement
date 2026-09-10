@@ -9,7 +9,51 @@
 </head>
 <body>
 
-    <div class="app-container">
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="https://data.orbinuity.nl/acm/logo.png" alt="ACM Logo" class="auth-logo">
+                <h2>ACM System</h2>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <select id="auth-language-select" class="lang-dropdown">
+                    <option value="en">🇬🇧 English</option>
+                    <option value="nl">🇳🇱 Nederlands</option>
+                    <option value="es">🇪🇸 Español</option>
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="de">🇩🇪 Deutsch</option>
+                </select>
+            </div>
+
+            <div id="cloud-login-form">
+                <div class="form-group">
+                    <label data-i18n="identifier">Username or Email</label>
+                    <input type="text" id="login-identifier" placeholder="username / email">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="password">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                </div>
+                <button id="cloud-login-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="loginBtn">Login to Orbinuity</button>
+                <p style="margin-top: 15px; font-size: 0.85rem; text-align: center;">
+                    <span data-i18n="noAccount">Don't have an account?</span> 
+                    <a href="https://orbinuity.nl/account/signup" target="_blank" data-i18n="makeAccount">Make one at Orbinuity</a>
+                </p>
+            </div>
+
+            <div id="cloud-2fa-form" class="hidden">
+                <div class="form-group">
+                    <label data-i18n="otpCode">6-Digit 2FA Code</label>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 5px;" data-i18n="otpSentDesc">A code was sent to your email.</p>
+                    <input type="text" id="login-otp" placeholder="123456" maxlength="6">
+                </div>
+                <button id="cloud-verify-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="verifyBtn">Verify & Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container" class="app-container hidden">
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="brand-container">
@@ -75,7 +119,7 @@
                 <h3 data-i18n="appearance">Appearance & Localization</h3>
                 <div class="form-group">
                     <label data-i18n="language">Language</label>
-                    <select id="language-select">
+                    <select id="language-select" class="lang-dropdown">
                         <option value="en">🇬🇧 English</option>
                         <option value="nl">🇳🇱 Nederlands</option>
                         <option value="es">🇪🇸 Español</option>
@@ -88,36 +132,8 @@
 
             <div class="settings-section">
                 <h3 data-i18n="cloudSyncTitle">Orbinuity Cloud Sync</h3>
-                <p id="cloud-status" class="cloud-status" data-i18n="notLoggedIn">Not connected.</p>
-                
-                <div id="cloud-login-form" class="form-group">
-                    <label data-i18n="identifier">Username or Email</label>
-                    <input type="text" id="login-identifier" placeholder="username / email">
-                    
-                    <label data-i18n="password" style="margin-top:10px;">Password</label>
-                    <input type="password" id="login-password" placeholder="••••••••">
-                    
-                    <button id="cloud-login-btn" class="btn secondary-btn" style="margin-top:10px;" data-i18n="loginBtn">Login to Orbinuity</button>
-                    
-                    <p style="margin-top: 10px; font-size: 0.85rem;">
-                        <span data-i18n="noAccount">Don't have an account?</span> 
-                        <a href="https://orbinuity.nl/account/signup" target="_blank" data-i18n="makeAccount">Make one at Orbinuity</a>
-                    </p>
-                </div>
-
-                <div id="cloud-2fa-form" class="form-group hidden">
-                    <label data-i18n="otpCode">6-Digit 2FA Code</label>
-                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 5px;" data-i18n="otpSentDesc">A code was sent to your email.</p>
-                    <input type="text" id="login-otp" placeholder="123456" maxlength="6">
-                    
-                    <button id="cloud-verify-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="verifyBtn">Verify & Login</button>
-                </div>
-
-                <div id="cloud-actions" class="hidden">
-                    <button id="sync-up-btn" class="btn primary-btn" data-i18n="syncUp">Push Data to Cloud</button>
-                    <button id="sync-down-btn" class="btn theme-btn" data-i18n="syncDown" style="margin-top:10px;">Pull Data from Cloud</button>
-                    <button id="cloud-logout-btn" class="btn danger-btn" style="margin-top:10px;" data-i18n="disconnect">Disconnect</button>
-                </div>
+                <p id="cloud-status" class="cloud-status"></p>
+                <button id="cloud-logout-btn" class="btn danger-btn" style="margin-top:10px;" data-i18n="disconnect">Disconnect</button>
             </div>
         </div>
     </div>
