@@ -493,7 +493,14 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 async function autoPushCloud() {
     if (!orbinuityToken) return;
     try {
-        const payload = { folders, cases };
+        const payload = { 
+            folders, 
+            cases,
+            settings: {
+                theme: currentTheme,
+                lang: currentLang
+            }
+        };
         await apiCall(`/external/${APP_ID}`, 'PUT', payload);
     } catch (e) {}
 }
@@ -515,9 +522,21 @@ async function autoPullCloud() {
         }
 
         const data = await apiCall(`/external/${APP_ID}`, 'GET');
-        if (data && data.cases) {
-            cases = data.cases;
-            localStorage.setItem('acm_cases', JSON.stringify(cases));
+        if (data) {
+            if (data.cases) {
+                cases = data.cases;
+                localStorage.setItem('acm_cases', JSON.stringify(cases));
+            }
+            if (data.settings) {
+                if (data.settings.theme && data.settings.theme !== currentTheme) {
+                    currentTheme = data.settings.theme;
+                    applyTheme(currentTheme);
+                }
+                if (data.settings.lang && data.settings.lang !== currentLang) {
+                    currentLang = data.settings.lang;
+                    applyLanguage(currentLang);
+                }
+            }
         }
 
         renderSidebar();
@@ -708,13 +727,16 @@ function applyLanguage(lang) {
     renderSidebar();
     if (activeCaseId) renderActiveCase();
     updateCloudUI();
+    autoPushCloud();
 }
 languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 authLanguageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 
 function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('acm_theme', theme); }
 document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light'; applyTheme(currentTheme);
+    currentTheme = currentTheme === 'light' ? 'dark' : 'light'; 
+    applyTheme(currentTheme);
+    autoPushCloud();
 });
 
 document.getElementById('add-block-btn').addEventListener('click', () => {
