@@ -511,6 +511,9 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     if (body) options.body = JSON.stringify(body);
     
     const res = await fetch(`${API_BASE}${endpoint}`, options);
+    if (res.status === 404 && method === 'GET') {
+        return null;
+    }
     if (!res.ok) throw new Error(`Status ${res.status}`);
     return res.json();
 }
@@ -545,17 +548,19 @@ async function autoPullCloud() {
             }
         } catch (e) {}
 
-        let data = null;
+        let res = null;
         try {
-            data = await apiCall(`/external/${APP_ID}`, 'GET');
+            res = await apiCall(`/external/${APP_ID}`, 'GET');
         } catch (e) {}
 
-        const hasSavedData = data && (data.cases || data.folders || data.settings);
+        const data = (res && (res.data || res.payload || res.storage)) || res;
 
-        if (hasSavedData) {
-            if (data.cases) cases = data.cases;
+        if (data && (data.cases || data.folders || data.settings)) {
+            if (data.cases && Array.isArray(data.cases)) {
+                cases = data.cases;
+            }
 
-            let cloudFolders = data.folders || [];
+            let cloudFolders = Array.isArray(data.folders) ? data.folders : [];
             const defaultFolder = cloudFolders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
 
             const folderMap = new Map();
@@ -565,11 +570,11 @@ async function autoPullCloud() {
             folders = Array.from(folderMap.values());
 
             if (data.settings) {
-                if (data.settings.theme) {
+                if (data.settings.theme && data.settings.theme !== currentTheme) {
                     currentTheme = data.settings.theme;
                     applyTheme(currentTheme);
                 }
-                if (data.settings.lang) {
+                if (data.settings.lang && data.settings.lang !== currentLang) {
                     currentLang = data.settings.lang;
                     applyLanguage(currentLang, false);
                 }
