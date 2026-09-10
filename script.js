@@ -533,54 +533,59 @@ async function autoPushCloud() {
 async function autoPullCloud() {
     if (!orbinuityToken) return;
     try {
-        let cloudFolders = [];
-        const data = await apiCall(`/external/${APP_ID}`, 'GET');
-        
-        if (data) {
-            if (data.cases) {
-                cases = data.cases;
-            }
-            if (data.folders) {
-                cloudFolders = data.folders;
-            }
-            if (data.settings) {
-                if (data.settings.theme && data.settings.theme !== currentTheme) {
-                    currentTheme = data.settings.theme;
-                    applyTheme(currentTheme);
-                }
-                if (data.settings.lang && data.settings.lang !== currentLang) {
-                    currentLang = data.settings.lang;
-                    applyLanguage(currentLang, false);
-                }
-            }
-        }
-
+        let roomFolders = [];
         try {
             const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
             if (roomData && roomData.rooms) {
-                const fetchedRooms = roomData.rooms.map(r => ({
+                roomFolders = roomData.rooms.map(r => ({
                     id: r.id,
                     name: r.name,
                     members: r.members || []
                 }));
-
-                const defaultFolder = cloudFolders.find(f => f.id === 'default') || 
-                                      folders.find(f => f.id === 'default') || 
-                                      { id: 'default', name: 'My Cases', members: [] };
-
-                const folderMap = new Map();
-                folderMap.set('default', defaultFolder);
-                cloudFolders.forEach(f => folderMap.set(f.id, f));
-                fetchedRooms.forEach(r => folderMap.set(r.id, r));
-
-                folders = Array.from(folderMap.values());
-            } else if (cloudFolders.length > 0) {
-                folders = cloudFolders;
             }
-        } catch (e) {
-            if (cloudFolders.length > 0) {
-                folders = cloudFolders;
+        } catch (e) {}
+
+        let data = null;
+        try {
+            data = await apiCall(`/external/${APP_ID}`, 'GET');
+        } catch (e) {}
+
+        const hasSavedData = data && (data.cases || data.folders || data.settings);
+
+        if (hasSavedData) {
+            if (data.cases) cases = data.cases;
+
+            let cloudFolders = data.folders || [];
+            const defaultFolder = cloudFolders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
+
+            const folderMap = new Map();
+            folderMap.set('default', defaultFolder);
+            cloudFolders.forEach(f => folderMap.set(f.id, f));
+            roomFolders.forEach(r => folderMap.set(r.id, r));
+            folders = Array.from(folderMap.values());
+
+            if (data.settings) {
+                if (data.settings.theme) {
+                    currentTheme = data.settings.theme;
+                    applyTheme(currentTheme);
+                }
+                if (data.settings.lang) {
+                    currentLang = data.settings.lang;
+                    applyLanguage(currentLang, false);
+                }
             }
+        } else {
+            const defaultFolder = { id: 'default', name: 'My Cases', members: [] };
+            const folderMap = new Map();
+            folderMap.set('default', defaultFolder);
+            roomFolders.forEach(r => folderMap.set(r.id, r));
+            folders = Array.from(folderMap.values());
+            cases = [];
+            currentTheme = 'light';
+            currentLang = 'en';
+            applyTheme(currentTheme);
+            applyLanguage(currentLang, false);
+            await autoPushCloud();
         }
 
         renderSidebar();
@@ -592,7 +597,16 @@ async function autoPullCloud() {
             activeCaseId = null;
             renderActiveCase();
         }
-    } catch (e) {}
+    } catch (e) {
+        folders = [{ id: 'default', name: 'My Cases', members: [] }];
+        cases = [];
+        currentTheme = 'light';
+        currentLang = 'en';
+        applyTheme(currentTheme);
+        applyLanguage(currentLang, false);
+        renderSidebar();
+        renderActiveCase();
+    }
 }
 
 function startAutoSyncTimer() {
