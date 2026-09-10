@@ -1,6 +1,7 @@
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
+const APP_ID = 'acm_app';
 
-let folders = JSON.parse(localStorage.getItem('acm_folders')) || [{ id: 'default', name: 'My Cases', sharedWith: [] }];
+let folders = JSON.parse(localStorage.getItem('acm_folders')) || [{ id: 'default', name: 'My Cases', members: [] }];
 let cases = JSON.parse(localStorage.getItem('acm_cases')) || [];
 
 cases.forEach(c => { 
@@ -336,11 +337,24 @@ function renderActiveCase() {
     });
 }
 
-document.getElementById('new-folder-btn').addEventListener('click', () => {
+document.getElementById('new-folder-btn').addEventListener('click', async () => {
     const name = prompt(getTrans('promptNewFolder'));
     if (name) {
-        folders.push({ id: generateId(), name: name.trim(), sharedWith: [] });
-        saveState(); renderSidebar();
+        if (orbinuityToken) {
+            try {
+                const res = await apiCall('/external/rooms', 'POST', { name: name.trim(), appId: APP_ID });
+                if (res && res.room) {
+                    const newRoomFolder = { id: res.room.id, name: res.room.name, members: res.room.members || [] };
+                    folders.push(newRoomFolder);
+                    saveState();
+                    renderSidebar();
+                    return;
+                }
+            } catch (e) {}
+        }
+        folders.push({ id: generateId(), name: name.trim(), members: [] });
+        saveState(); 
+        renderSidebar();
     }
 });
 
@@ -479,22 +493,34 @@ async function autoPushCloud() {
     if (!orbinuityToken) return;
     try {
         const payload = { folders, cases };
-        await apiCall('/external/acm_app', 'PUT', payload);
+        await apiCall(`/external/${APP_ID}`, 'PUT', payload);
     } catch (e) {}
 }
 
 async function autoPullCloud() {
     if (!orbinuityToken) return;
     try {
-        const data = await apiCall('/external/acm_app', 'GET');
-        if (data && data.folders && data.cases) {
-            folders = data.folders;
-            cases = data.cases;
+        const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
+        if (roomData && roomData.rooms) {
+            const fetchedRooms = roomData.rooms.map(r => ({
+                id: r.id,
+                name: r.name,
+                members: r.members || []
+            }));
+
+            const defaultFolder = folders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
+            folders = [defaultFolder, ...fetchedRooms];
             localStorage.setItem('acm_folders', JSON.stringify(folders));
-            localStorage.setItem('acm_cases', JSON.stringify(cases));
-            renderSidebar();
-            if (activeCaseId) renderActiveCase();
         }
+
+        const data = await apiCall(`/external/${APP_ID}`, 'GET');
+        if (data && data.cases) {
+            cases = data.cases;
+            localStorage.setItem('acm_cases', JSON.stringify(cases));
+        }
+
+        renderSidebar();
+        if (activeCaseId) renderActiveCase();
     } catch (e) {}
 }
 
@@ -605,7 +631,6 @@ function updateCloudUI() {
 
 function openShareModal(folderId) {
     targetShareFolderId = folderId;
-    document.getElementById('share-result').classList.add('hidden');
     document.getElementById('share-username-input').value = '';
     
     const folder = folders.find(f => f.id === folderId);
@@ -618,12 +643,12 @@ function renderSharedUsersList(folder) {
     const ul = document.getElementById('shared-users-list');
     ul.innerHTML = '';
     
-    if (!folder || !folder.sharedWith || folder.sharedWith.length === 0) {
+    if (!folder || !folder.members || folder.members.length === 0) {
         ul.innerHTML = `<li style="color:var(--text-light)">${getTrans('noneYet')}</li>`;
         return;
     }
 
-    folder.sharedWith.forEach(u => {
+    folder.members.forEach(u => {
         const li = document.createElement('li');
         li.className = 'shared-user-item';
         
@@ -632,60 +657,25 @@ function renderSharedUsersList(folder) {
         const username = typeof u === 'object' ? u.username : u;
         nameSpan.textContent = `${displayName} (@${username})`;
         
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'small-btn small-danger';
-        removeBtn.textContent = 'X';
-        removeBtn.addEventListener('click', () => {
-            folder.sharedWith = folder.sharedWith.filter(item => {
-                const itemId = typeof item === 'object' ? (item.userId || item.id) : item;
-                const targetId = typeof u === 'object' ? (u.userId || u.id) : u;
-                return itemId !== targetId;
-            });
-            saveState();
-            renderSharedUsersList(folder);
-        });
-
         li.appendChild(nameSpan);
-        li.appendChild(removeBtn);
         ul.appendChild(li);
     });
 }
 
-let pendingLookupUser = null;
-document.getElementById('lookup-user-btn').addEventListener('click', async () => {
+document.getElementById('add-member-btn').addEventListener('click', async () => {
     if(!orbinuityToken) return alert("You must connect to Orbinuity Cloud first.");
     const username = document.getElementById('share-username-input').value.replace('@','').trim();
-    if(!username) return;
+    if(!username || !targetShareFolderId) return;
 
     try {
-        const user = await apiCall(`/users/lookup?username=${username}`);
-        pendingLookupUser = {
-            userId: user.userId || user.id || user.permanentId,
-            username: user.username,
-            displayName: user.displayName || user.username
-        };
-        document.getElementById('found-user-display').innerHTML = `Found: <strong>${pendingLookupUser.displayName}</strong> (@${pendingLookupUser.username})`;
-        document.getElementById('share-result').classList.remove('hidden');
-    } catch (e) { alert("User not found or lookup failed."); }
-});
-
-document.getElementById('add-collaborator-btn').addEventListener('click', () => {
-    if(pendingLookupUser && targetShareFolderId) {
-        const folder = folders.find(f => f.id === targetShareFolderId);
-        if(folder) {
-            const exists = folder.sharedWith.some(u => {
-                const id = typeof u === 'object' ? (u.userId || u.id) : u;
-                return id === pendingLookupUser.userId;
-            });
-
-            if (!exists) {
-                folder.sharedWith.push(pendingLookupUser);
-                saveState();
-                renderSharedUsersList(folder);
-                document.getElementById('share-result').classList.add('hidden');
-                document.getElementById('share-username-input').value = '';
-            }
-        }
+        const res = await apiCall(`/external/rooms/${targetShareFolderId}/members`, 'POST', { username });
+        alert(res.message || "Added user successfully.");
+        document.getElementById('share-username-input').value = '';
+        await autoPullCloud();
+        const updatedFolder = folders.find(f => f.id === targetShareFolderId);
+        renderSharedUsersList(updatedFolder);
+    } catch (e) { 
+        alert("Failed to add member to room. Make sure username is correct."); 
     }
 });
 
