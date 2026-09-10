@@ -588,8 +588,16 @@ async function autoPullCloud() {
             const defaultFolder = cloudFolders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
 
             const folderMap = new Map();
+
+            folders.forEach(f => {
+                if (f.id && f.id.startsWith('room_')) {
+                    folderMap.set(f.id, f);
+                }
+            });
+
             folderMap.set('default', defaultFolder);
             cloudFolders.forEach(f => { if (f.id) folderMap.set(f.id, f); });
+
             roomFolders.forEach(r => { if (r.id) folderMap.set(r.id, r); });
 
             folders = Array.from(folderMap.values());
@@ -606,8 +614,15 @@ async function autoPullCloud() {
             }
         } else if (res === null) {
             const folderMap = new Map();
+
+            folders.forEach(f => {
+                if (f.id && f.id.startsWith('room_')) {
+                    folderMap.set(f.id, f);
+                }
+            });
+
             folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
-            roomFolders.forEach(r => folderMap.set(r.id, r));
+            roomFolders.forEach(r => { if (r.id) folderMap.set(r.id, r); });
             folders = Array.from(folderMap.values());
 
             await autoPushCloud();
