@@ -1,25 +1,45 @@
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 const APP_ID = 'acm_app';
 
-let folders = JSON.parse(localStorage.getItem('acm_folders')) || [{ id: 'default', name: 'My Cases', members: [] }];
-let cases = JSON.parse(localStorage.getItem('acm_cases')) || [];
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Lax";
+}
 
-cases.forEach(c => { 
-    if (!c.folderId) c.folderId = 'default'; 
-    if (!c.description) c.description = '';
-});
+function getCookie(name) {
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+}
+
+let folders = [{ id: 'default', name: 'My Cases', members: [] }];
+let cases = [];
 
 let activeCaseId = null;
 let editingBlockId = null;
 let editingCaseId = null;
 let targetFolderIdForNewCase = null;
 let currentImageDataUrl = null;
-let currentTheme = localStorage.getItem('acm_theme') || 'light';
-let currentLang = localStorage.getItem('acm_lang') || 'en';
+let currentTheme = 'light';
+let currentLang = 'en';
 
 const API_BASE = 'https://api.orbinuity.nl:34430/api';
-let orbinuityToken = localStorage.getItem('acm_token') || null;
-let currentUser = JSON.parse(localStorage.getItem('acm_user')) || null;
+let orbinuityToken = getCookie('acm_token') || null;
+let currentUser = null;
 let targetShareFolderId = null; 
 let pendingLoginUserId = null; 
 let autoSyncInterval = null;
@@ -149,17 +169,22 @@ function getTypeLabel(type) {
 }
 
 async function init() {
-    applyTheme(currentTheme);
-    applyLanguage(currentLang);
-
-    if (orbinuityToken && currentUser) {
-        authScreen.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        renderSidebar();
-        updateCloudUI();
-        await autoPullCloud();
-        startAutoSyncTimer();
-        if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
+    if (orbinuityToken) {
+        try {
+            currentUser = await apiCall('/account/me');
+            authScreen.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            updateCloudUI();
+            await autoPullCloud();
+            startAutoSyncTimer();
+            if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
+        } catch (e) {
+            eraseCookie('acm_token');
+            orbinuityToken = null;
+            currentUser = null;
+            authScreen.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+        }
     } else {
         authScreen.classList.remove('hidden');
         appContainer.classList.add('hidden');
@@ -167,8 +192,6 @@ async function init() {
 }
 
 function saveState() {
-    localStorage.setItem('acm_folders', JSON.stringify(folders));
-    localStorage.setItem('acm_cases', JSON.stringify(cases));
     autoPushCloud();
 }
 
@@ -518,14 +541,12 @@ async function autoPullCloud() {
 
             const defaultFolder = folders.find(f => f.id === 'default') || { id: 'default', name: 'My Cases', members: [] };
             folders = [defaultFolder, ...fetchedRooms];
-            localStorage.setItem('acm_folders', JSON.stringify(folders));
         }
 
         const data = await apiCall(`/external/${APP_ID}`, 'GET');
         if (data) {
             if (data.cases) {
                 cases = data.cases;
-                localStorage.setItem('acm_cases', JSON.stringify(cases));
             }
             if (data.settings) {
                 if (data.settings.theme && data.settings.theme !== currentTheme) {
@@ -604,11 +625,10 @@ document.getElementById('cloud-verify-btn').addEventListener('click', async () =
 async function finalizeLogin(tokenObject) {
     const actualToken = typeof tokenObject === 'string' ? tokenObject : tokenObject.token;
     orbinuityToken = actualToken;
-    localStorage.setItem('acm_token', actualToken);
+    setCookie('acm_token', actualToken, 7);
     
     try {
         const profile = await apiCall('/account/me'); 
-        localStorage.setItem('acm_user', JSON.stringify(profile));
         currentUser = profile;
         pendingLoginUserId = null;
         authScreen.classList.add('hidden');
@@ -619,7 +639,7 @@ async function finalizeLogin(tokenObject) {
         if (cases.length > 0 && !activeCaseId) selectCase(cases[0].id);
     } catch (e) {
         orbinuityToken = null;
-        localStorage.removeItem('acm_token');
+        eraseCookie('acm_token');
         alert("Failed to load user profile after login.");
     }
 }
@@ -628,8 +648,7 @@ document.getElementById('cloud-logout-btn').addEventListener('click', () => {
     if (autoSyncInterval) clearInterval(autoSyncInterval);
     orbinuityToken = null; 
     currentUser = null;
-    localStorage.removeItem('acm_token'); 
-    localStorage.removeItem('acm_user');
+    eraseCookie('acm_token');
     authScreen.classList.remove('hidden');
     appContainer.classList.add('hidden');
     settingsModal.classList.add('hidden');
@@ -715,7 +734,9 @@ document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click
 document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
 
 function applyLanguage(lang) {
-    currentLang = lang; localStorage.setItem('acm_lang', lang); languageSelect.value = lang; authLanguageSelect.value = lang;
+    currentLang = lang; 
+    languageSelect.value = lang; 
+    authLanguageSelect.value = lang;
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         const val = getTrans(key);
@@ -732,7 +753,7 @@ function applyLanguage(lang) {
 languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 authLanguageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
 
-function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('acm_theme', theme); }
+function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
 document.getElementById('theme-toggle-btn').addEventListener('click', () => {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light'; 
     applyTheme(currentTheme);
