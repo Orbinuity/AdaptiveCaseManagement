@@ -3,10 +3,15 @@ const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 let folders = JSON.parse(localStorage.getItem('acm_folders')) || [{ id: 'default', name: 'My Cases', sharedWith: [] }];
 let cases = JSON.parse(localStorage.getItem('acm_cases')) || [];
 
-cases.forEach(c => { if (!c.folderId) c.folderId = 'default'; });
+cases.forEach(c => { 
+    if (!c.folderId) c.folderId = 'default'; 
+    if (!c.description) c.description = '';
+});
 
 let activeCaseId = null;
 let editingBlockId = null;
+let editingCaseId = null;
+let targetFolderIdForNewCase = null;
 let currentImageDataUrl = null;
 let currentTheme = localStorage.getItem('acm_theme') || 'light';
 let currentLang = localStorage.getItem('acm_lang') || 'en';
@@ -28,6 +33,12 @@ const shareModal = document.getElementById('share-modal');
 const blockModal = document.getElementById('block-modal');
 const blockModalTitle = document.getElementById('block-modal-title');
 
+const caseModal = document.getElementById('case-modal');
+const caseModalTitle = document.getElementById('case-modal-title');
+const caseTitleInput = document.getElementById('case-title-input');
+const caseDescInput = document.getElementById('case-desc-input');
+const caseForm = document.getElementById('case-form');
+
 const translations = {
     en: {
         appTitle: "ACM System", defaultFolder: "My Cases", newFolder: "+ New Folder", emptyState: "Select or create a case to begin",
@@ -44,7 +55,8 @@ const translations = {
         disconnect: "Disconnect", notLoggedIn: "Not connected.", loggedInAs: "Connected as:",
         shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them.",
         search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:", shareBtn: "Share", addCaseBtn: "+ Case",
-        promptNewFolder: "Enter Folder Name:", promptNewCase: "Enter new Case Name:", noneYet: "None yet",
+        promptNewFolder: "Enter Folder Name:", noneYet: "None yet",
+        editCaseBtn: "Edit Case", createCaseTitle: "Create Case", editCaseTitle: "Edit Case", saveCase: "Save Case",
         confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?"
     },
     nl: {
@@ -62,7 +74,8 @@ const translations = {
         disconnect: "Uitloggen", notLoggedIn: "Niet verbonden.", loggedInAs: "Ingelogd als:",
         shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen.",
         search: "Zoeken", addUser: "Gebruiker Toevoegen", sharedWithTitle: "Gedeeld Met:", shareBtn: "Delen", addCaseBtn: "+ Zaak",
-        promptNewFolder: "Voer mapnaam in:", promptNewCase: "Voer zaaknaam in:", noneYet: "Nog niemand",
+        promptNewFolder: "Voer mapnaam in:", noneYet: "Nog niemand",
+        editCaseBtn: "Zaak Bewerken", createCaseTitle: "Zaak Aanmaken", editCaseTitle: "Zaak Bewerken", saveCase: "Zaak Opslaan",
         confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?"
     },
     es: {
@@ -80,7 +93,8 @@ const translations = {
         disconnect: "Desconectar", notLoggedIn: "No conectado.", loggedInAs: "Conectado como:",
         shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity.",
         search: "Buscar", addUser: "Añadir Usuario", sharedWithTitle: "Compartido Con:", shareBtn: "Compartir", addCaseBtn: "+ Caso",
-        promptNewFolder: "Nombre de la carpeta:", promptNewCase: "Nombre del caso:", noneYet: "Aún nadie",
+        promptNewFolder: "Nombre de la carpeta:", noneYet: "Aún nadie",
+        editCaseBtn: "Editar Caso", createCaseTitle: "Crear Caso", editCaseTitle: "Editar Caso", saveCase: "Guardar Caso",
         confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?"
     },
     fr: {
@@ -98,7 +112,8 @@ const translations = {
         disconnect: "Déconnexion", notLoggedIn: "Non connecté.", loggedInAs: "Connecté en tant que :",
         shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity.",
         search: "Rechercher", addUser: "Ajouter L'utilisateur", sharedWithTitle: "Partagé Avec :", shareBtn: "Partager", addCaseBtn: "+ Cas",
-        promptNewFolder: "Nom du dossier :", promptNewCase: "Nom du cas :", noneYet: "Aucun pour le moment",
+        promptNewFolder: "Nom du dossier :", noneYet: "Aucun pour le moment",
+        editCaseBtn: "Modifier le Cas", createCaseTitle: "Créer un Cas", editCaseTitle: "Modifier le Cas", saveCase: "Enregistrer",
         confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?"
     },
     de: {
@@ -116,7 +131,8 @@ const translations = {
         disconnect: "Trennen", notLoggedIn: "Nicht verbunden.", loggedInAs: "Angemeldet als:",
         shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen.",
         search: "Suchen", addUser: "Hinzufügen", sharedWithTitle: "Geteilt Mit:", shareBtn: "Teilen", addCaseBtn: "+ Fall",
-        promptNewFolder: "Ordnername:", promptNewCase: "Fallname:", noneYet: "Noch niemand",
+        promptNewFolder: "Ordnername:", noneYet: "Noch niemand",
+        editCaseBtn: "Fall Bearbeiten", createCaseTitle: "Fall Erstellen", editCaseTitle: "Fall Bearbeiten", saveCase: "Fall Speichern",
         confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?"
     }
 };
@@ -243,6 +259,15 @@ function renderActiveCase() {
     activeCaseView.classList.remove('hidden');
     document.getElementById('active-case-title').textContent = currentCase.title;
     
+    const descEl = document.getElementById('active-case-description');
+    if (currentCase.description) {
+        descEl.textContent = currentCase.description;
+        descEl.classList.remove('hidden');
+    } else {
+        descEl.textContent = '';
+        descEl.classList.add('hidden');
+    }
+    
     blocksContainer.innerHTML = '';
     
     currentCase.blocks.forEach(block => {
@@ -301,13 +326,58 @@ document.getElementById('new-folder-btn').addEventListener('click', () => {
 });
 
 function createCase(folderId) {
-    const title = prompt(getTrans('promptNewCase'));
-    if (title) {
-        const newCase = { id: generateId(), folderId, title: title.trim(), blocks: [] };
-        cases.push(newCase);
-        saveState(); selectCase(newCase.id);
-    }
+    editingCaseId = null;
+    targetFolderIdForNewCase = folderId;
+    caseModalTitle.textContent = getTrans('createCaseTitle');
+    caseForm.reset();
+    caseModal.classList.remove('hidden');
 }
+
+function editCase(caseId) {
+    const c = cases.find(item => item.id === caseId);
+    if (!c) return;
+
+    editingCaseId = c.id;
+    caseModalTitle.textContent = getTrans('editCaseTitle');
+    caseTitleInput.value = c.title || '';
+    caseDescInput.value = c.description || '';
+    caseModal.classList.remove('hidden');
+}
+
+document.getElementById('edit-case-btn').addEventListener('click', () => {
+    if (activeCaseId) editCase(activeCaseId);
+});
+
+caseForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const title = caseTitleInput.value.trim();
+    const description = caseDescInput.value.trim();
+
+    if (!title) return;
+
+    if (editingCaseId) {
+        const c = cases.find(item => item.id === editingCaseId);
+        if (c) {
+            c.title = title;
+            c.description = description;
+        }
+    } else {
+        const newCase = {
+            id: generateId(),
+            folderId: targetFolderIdForNewCase || 'default',
+            title,
+            description,
+            blocks: []
+        };
+        cases.push(newCase);
+        activeCaseId = newCase.id;
+    }
+
+    saveState();
+    renderSidebar();
+    renderActiveCase();
+    caseModal.classList.add('hidden');
+});
 
 function deleteFolder(id) {
     if (confirm(getTrans('confirmDeleteFolder'))) {
@@ -591,6 +661,7 @@ document.getElementById('add-collaborator-btn').addEventListener('click', () => 
 document.getElementById('open-settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
 document.querySelectorAll('.close-settings').forEach(b => b.addEventListener('click', () => settingsModal.classList.add('hidden')));
 document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click', () => shareModal.classList.add('hidden')));
+document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
 
 function applyLanguage(lang) {
     currentLang = lang; localStorage.setItem('acm_lang', lang); languageSelect.value = lang;
