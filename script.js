@@ -86,14 +86,14 @@ const translations = {
         disconnect: "Disconnect", notLoggedIn: "Not connected.", loggedInAs: "Connected as:",
         shareFolderTitle: "Share Folder", shareFolderDesc: "Look up a user by their Orbinuity username to invite them to this folder.",
         search: "Search", addUser: "Add User", sharedWithTitle: "Shared With:", shareBtn: "Share", addCaseBtn: "+ Case",
-        promptNewFolder: "Enter Folder Name:", promptRenameFolder: "Enter new folder name:", renameBtn: "Rename", noneYet: "None yet",
+        promptNewFolder: "Enter Folder Name:", promptRenameFolder: "Enter new folder name:", renameBtn: "Rename", noneYet: "None yet", ownerTag: "Owner",
         editCaseBtn: "Edit Case", createCaseTitle: "Create Case", editCaseTitle: "Edit Case", saveCase: "Save Case",
-        confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?",
+        confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?", confirmRemoveMember: "Are you sure you want to remove this user?",
         titlePlaceholder: "Case Name", descPlaceholder: "Case description...", keyPlaceholder: "Key", valPlaceholder: "Value",
         usernamePlaceholder: "@username", loginIdentifierPlaceholder: "username / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Enter identifier and password.", alert2faReq: "Enter 2FA Code.", alertInvalid2fa: "Invalid 2FA code.",
         alertLoginFail: "Login failed. Please check your credentials.", alertProfileFail: "Failed to load user profile after login.",
-        alertAddMemberSuccess: "Added user successfully.", alertAddMemberFail: "Failed to add member to room. Make sure username is correct.",
+        alertAddMemberSuccess: "Added user successfully.", alertAddMemberFail: "Failed to add member to room. Make sure username is correct.", alertRemoveMemberFail: "Failed to remove member from room.",
         alertCloudConnectReq: "You must connect to Orbinuity Cloud first.", alertCreateFolderFail: "Could not create folder on server. Please try again.",
         alertRenameRoomFail: "Failed to update room name on server."
     },
@@ -111,14 +111,14 @@ const translations = {
         disconnect: "Uitloggen", notLoggedIn: "Niet verbonden.", loggedInAs: "Ingelogd als:",
         shareFolderTitle: "Map Delen", shareFolderDesc: "Zoek een gebruiker op Orbinuity gebruikersnaam om uit te nodigen voor deze map.",
         search: "Zoeken", addUser: "Gebruiker Toevoegen", sharedWithTitle: "Gedeeld Met:", shareBtn: "Delen", addCaseBtn: "+ Zaak",
-        promptNewFolder: "Voer mapnaam in:", promptRenameFolder: "Voer nieuwe mapnaam in:", renameBtn: "Hernoemen", noneYet: "Nog niemand",
+        promptNewFolder: "Voer mapnaam in:", promptRenameFolder: "Voer nieuwe mapnaam in:", renameBtn: "Hernoemen", noneYet: "Nog niemand", ownerTag: "Eigenaar",
         editCaseBtn: "Zaak Bewerken", createCaseTitle: "Zaak Aanmaken", editCaseTitle: "Zaak Bewerken", saveCase: "Zaak Opslaan",
-        confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?",
+        confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?", confirmRemoveMember: "Weet u zeker dat u deze gebruiker wilt verwijderen?",
         titlePlaceholder: "Zaaknaam", descPlaceholder: "Zaak beschrijving...", keyPlaceholder: "Sleutel", valPlaceholder: "Waarde",
         usernamePlaceholder: "@gebruikersnaam", loginIdentifierPlaceholder: "gebruikersnaam / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Voer gebruikersnaam/e-mail en wachtwoord in.", alert2faReq: "Voer 2FA-code in.", alertInvalid2fa: "Ongeldige 2FA-code.",
         alertLoginFail: "Inloggen mislukt. Controleer uw gegevens.", alertProfileFail: "Laden van gebruikersprofiel mislukt na inloggen.",
-        alertAddMemberSuccess: "Gebruiker succesvol toegevoegd.", alertAddMemberFail: "Toevoegen van lid mislukt. Controleer de gebruikersnaam.",
+        alertAddMemberSuccess: "Gebruiker succesvol toegevoegd.", alertAddMemberFail: "Toevoegen van lid mislukt. Controleer de gebruikersnaam.", alertRemoveMemberFail: "Verwijderen van lid mislukt.",
         alertCloudConnectReq: "U moet eerst verbinden met Orbinuity Cloud.", alertCreateFolderFail: "Kon map niet aanmaken op de server. Probeer het opnieuw.",
         alertRenameRoomFail: "Bijwerken van mapnaam op de server mislukt."
     },
@@ -136,14 +136,14 @@ const translations = {
         disconnect: "Desconectar", notLoggedIn: "No conectado.", loggedInAs: "Conectado como:",
         shareFolderTitle: "Compartir Carpeta", shareFolderDesc: "Busca un usuario por su nombre de usuario de Orbinuity para invitarlo a esta carpeta.",
         search: "Buscar", addUser: "Añadir Usuario", sharedWithTitle: "Compartido Con:", shareBtn: "Compartir", addCaseBtn: "+ Caso",
-        promptNewFolder: "Nombre de la carpeta:", promptRenameFolder: "Ingrese el nuevo nombre de la carpeta:", renameBtn: "Renombrar", noneYet: "Aún nadie",
+        promptNewFolder: "Nombre de la carpeta:", promptRenameFolder: "Ingrese el nuevo nombre de la carpeta:", renameBtn: "Renombrar", noneYet: "Aún nadie", ownerTag: "Propietario",
         editCaseBtn: "Editar Caso", createCaseTitle: "Crear Caso", editCaseTitle: "Editar Caso", saveCase: "Guardar Caso",
-        confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?",
+        confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?", confirmRemoveMember: "¿Está seguro de que desea eliminar a este usuario?",
         titlePlaceholder: "Nombre del Caso", descPlaceholder: "Descripción del caso...", keyPlaceholder: "Clave", valPlaceholder: "Valor",
         usernamePlaceholder: "@usuario", loginIdentifierPlaceholder: "usuario / correo", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Ingrese usuario y contraseña.", alert2faReq: "Ingrese el código 2FA.", alertInvalid2fa: "Código 2FA inválido.",
         alertLoginFail: "Error de inicio de sesión. Verifique sus credenciales.", alertProfileFail: "Error al cargar el perfil de usuario después de iniciar sesión.",
-        alertAddMemberSuccess: "Usuario añadido con éxito.", alertAddMemberFail: "Error al añadir miembro. Verifique el nombre de usuario.",
+        alertAddMemberSuccess: "Usuario añadido con éxito.", alertAddMemberFail: "Error al añadir miembro. Verifique el nombre de usuario.", alertRemoveMemberFail: "Error al eliminar miembro del aula.",
         alertCloudConnectReq: "Primero debe conectarse a Orbinuity Cloud.", alertCreateFolderFail: "No se pudo crear la carpeta en el servidor. Inténtelo de nuevo.",
         alertRenameRoomFail: "Error al actualizar el nombre de la carpeta en el servidor."
     },
@@ -161,14 +161,14 @@ const translations = {
         disconnect: "Déconnexion", notLoggedIn: "Non connecté.", loggedInAs: "Connecté en tant que :",
         shareFolderTitle: "Partager le Dossier", shareFolderDesc: "Recherchez un utilisateur par son nom d'utilisateur Orbinuity pour l'inviter dans ce dossier.",
         search: "Rechercher", addUser: "Ajouter L'utilisateur", sharedWithTitle: "Partagé Avec :", shareBtn: "Partager", addCaseBtn: "+ Cas",
-        promptNewFolder: "Nom du dossier :", promptRenameFolder: "Entrez le nouveau nom du dossier :", renameBtn: "Renommer", noneYet: "Aucun pour le moment",
+        promptNewFolder: "Nom du dossier :", promptRenameFolder: "Entrez le nouveau nom du dossier :", renameBtn: "Renommer", noneYet: "Aucun pour le moment", ownerTag: "Propriétaire",
         editCaseBtn: "Modifier le Cas", createCaseTitle: "Créer un Cas", editCaseTitle: "Modifier le Cas", saveCase: "Enregistrer",
-        confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?",
+        confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?", confirmRemoveMember: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
         titlePlaceholder: "Nom du Cas", descPlaceholder: "Description du cas...", keyPlaceholder: "Clé", valPlaceholder: "Valeur",
         usernamePlaceholder: "@utilisateur", loginIdentifierPlaceholder: "nom d'utilisateur / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Veuillez saisir votre identifiant et votre mot de passe.", alert2faReq: "Veuillez saisir le code 2FA.", alertInvalid2fa: "Code 2FA invalide.",
         alertLoginFail: "Échec de la connexion. Veuillez vérifier vos identifiants.", alertProfileFail: "Échec du chargement du profil utilisateur après la connexion.",
-        alertAddMemberSuccess: "Utilisateur ajouté avec succès.", alertAddMemberFail: "Échec de l'ajout du membre. Vérifiez le nom d'utilisateur.",
+        alertAddMemberSuccess: "Utilisateur ajouté avec succès.", alertAddMemberFail: "Échec de l'ajout du membre. Vérifiez le nom d'utilisateur.", alertRemoveMemberFail: "Échec de la suppression du membre.",
         alertCloudConnectReq: "Vous devez d'abord vous connecter à Orbinuity Cloud.", alertCreateFolderFail: "Impossible de créer le dossier sur le serveur. Veuillez réessayer.",
         alertRenameRoomFail: "Échec de la mise à jour du nom du dossier sur le serveur."
     },
@@ -186,14 +186,14 @@ const translations = {
         disconnect: "Trennen", notLoggedIn: "Nicht verbunden.", loggedInAs: "Angemeldet als:",
         shareFolderTitle: "Ordner Teilen", shareFolderDesc: "Suchen Sie einen Benutzer nach seinem Orbinuity-Benutzernamen, um ihn zu diesem Ordner einzuladen.",
         search: "Suchen", addUser: "Hinzufügen", sharedWithTitle: "Geteilt Mit:", shareBtn: "Teilen", addCaseBtn: "+ Fall",
-        promptNewFolder: "Ordnername:", promptRenameFolder: "Neuen Ordnernamen eingeben:", renameBtn: "Umbenennen", noneYet: "Noch niemand",
+        promptNewFolder: "Ordnername:", promptRenameFolder: "Neuen Ordnernamen eingeben:", renameBtn: "Umbenennen", noneYet: "Noch niemand", ownerTag: "Eigentümer",
         editCaseBtn: "Fall Bearbeiten", createCaseTitle: "Fall Erstellen", editCaseTitle: "Fall Bearbeiten", saveCase: "Fall Speichern",
-        confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?",
+        confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?", confirmRemoveMember: "Sind Sie sicher, dass Sie diesen Benutzer entfernen möchten?",
         titlePlaceholder: "Fallname", descPlaceholder: "Fallbeschreibung...", keyPlaceholder: "Schlüssel", valPlaceholder: "Wert",
         usernamePlaceholder: "@benutzername", loginIdentifierPlaceholder: "benutzername / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Benutzername und Passwort eingeben.", alert2faReq: "2FA-Code eingeben.", alertInvalid2fa: "Ungültiger 2FA-Code.",
         alertLoginFail: "Anmeldung fehlgeschlagen. Bitte Anmeldedaten überprüfen.", alertProfileFail: "Profil konnte nach der Anmeldung nicht geladen werden.",
-        alertAddMemberSuccess: "Benutzer erfolgreich hinzugefügt.", alertAddMemberFail: "Mitglied konnte nicht hinzugefügt werden. Benutzernamen überprüfen.",
+        alertAddMemberSuccess: "Benutzer erfolgreich hinzugefügt.", alertAddMemberFail: "Mitglied konnte nicht hinzugefügt werden. Benutzernamen überprüfen.", alertRemoveMemberFail: "Fehler beim Entfernen des Mitglieds.",
         alertCloudConnectReq: "Sie müssen sich zuerst mit Orbinuity Cloud verbinden.", alertCreateFolderFail: "Ordner konnte auf dem Server nicht erstellt werden. Bitte erneut versuchen.",
         alertRenameRoomFail: "Ordnername konnte auf dem Server nicht aktualisiert werden."
     }
@@ -458,6 +458,7 @@ document.getElementById('new-folder-btn').addEventListener('click', async () => 
                 const newRoomFolder = { 
                     id: res.room.id, 
                     name: res.room.name, 
+                    hostId: res.room.hostId,
                     members: res.room.members || [] 
                 };
                 
@@ -640,6 +641,7 @@ async function autoPullCloud() {
                 roomFolders = roomData.rooms.map(r => ({
                     id: r.id,
                     name: r.name,
+                    hostId: r.hostId,
                     members: r.members || []
                 }));
             }
@@ -823,32 +825,67 @@ function renderSharedUsersList(folder) {
         return;
     }
 
-    folder.members.forEach(u => {
+    const membersList = [...folder.members].map(u => {
+        if (typeof u === 'object' && u !== null) {
+            return {
+                userId: String(u.userId || u.id),
+                displayName: u.displayName || u.username || u.userId || 'User',
+                username: u.username || u.userId || 'User'
+            };
+        }
+        const isMe = currentUser && String(currentUser.id) === String(u);
+        return {
+            userId: String(u),
+            displayName: isMe ? (currentUser.displayName || currentUser.username) : String(u),
+            username: isMe ? currentUser.username : String(u)
+        };
+    });
+
+    membersList.sort((a, b) => {
+        if (a.userId === String(folder.hostId)) return -1;
+        if (b.userId === String(folder.hostId)) return 1;
+        return 0;
+    });
+
+    membersList.forEach(u => {
         const li = document.createElement('li');
         li.className = 'shared-user-item';
         
         const nameSpan = document.createElement('span');
-        let displayName = '';
-        let username = '';
-
-        if (typeof u === 'object' && u !== null) {
-            displayName = u.displayName || u.username || u.userId || 'User';
-            username = u.username || u.userId || 'User';
-        } else if (typeof u === 'string') {
-            if (currentUser && String(currentUser.id) === u) {
-                displayName = currentUser.displayName || currentUser.username;
-                username = currentUser.username;
-            } else {
-                displayName = u;
-                username = u;
-            }
+        const isHost = u.userId === String(folder.hostId);
+        const roleBadge = isHost ? ` (${getTrans('ownerTag')})` : '';
+        nameSpan.textContent = `${u.displayName} (@${u.username})${roleBadge}`;
+        if (isHost) {
+            nameSpan.style.fontWeight = 'bold';
         }
-
-        nameSpan.textContent = `${displayName} (@${username})`;
         
         li.appendChild(nameSpan);
+
+        if (!isHost) {
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'small-btn small-danger';
+            removeBtn.innerHTML = icons.cross;
+            removeBtn.title = getTrans('confirmDeleteBlock');
+            removeBtn.addEventListener('click', () => {
+                removeMemberFromRoom(folder.id, u.userId);
+            });
+            li.appendChild(removeBtn);
+        }
+
         ul.appendChild(li);
     });
+}
+
+async function removeMemberFromRoom(roomId, targetUserId) {
+    if (!confirm(getTrans('confirmRemoveMember'))) return;
+    try {
+        await apiCall(`/external/rooms/${roomId}/members/${targetUserId}`, 'DELETE');
+        await autoPullCloud();
+        const updatedFolder = folders.find(f => f.id === roomId);
+        renderSharedUsersList(updatedFolder);
+    } catch (e) {
+        alert(getTrans('alertRemoveMemberFail'));
+    }
 }
 
 document.getElementById('add-member-btn').addEventListener('click', async () => {
