@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACM - Adaptive Case Management</title>
+    <!-- App Favicon -->
+    <link rel="icon" href="https://data.orbinuity.nl/acm/logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar for Folders & Cases -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-container">
+                    <img src="https://data.orbinuity.nl/acm/logo.png" alt="ACM Logo" class="app-logo">
+                    <h2 data-i18n="appTitle">ACM System</h2>
+                </div>
+                <button id="open-settings-btn" class="btn secondary-btn" style="padding: 5px 10px; font-size: 0.9rem;" title="Settings">Settings</button>
+            </div>
+            
+            <button id="new-folder-btn" class="btn primary-btn" data-i18n="newFolder">+ New Folder</button>
+            
+            <div id="sidebar-content" class="sidebar-content">
+                <!-- Folders and Cases will be injected here via JS -->
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <div id="no-case-selected" class="empty-state">
+                <h3 data-i18n="emptyState">Select or create a case to begin</h3>
+            </div>
+
+            <div id="active-case-view" class="case-view hidden">
+                <div class="case-header">
+                    <h1 id="active-case-title">Case Title</h1>
+                    <button id="add-block-btn" class="btn secondary-btn" data-i18n="addInfoBlock">+ Add Info Block</button>
+                </div>
+                
+                <div id="blocks-container" class="blocks-grid">
+                    <!-- Info Blocks will be injected here via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn close-settings">&times;</span>
+            <h2 data-i18n="settingsTitle">Settings</h2>
+            
+            <div class="settings-section">
+                <h3 data-i18n="appearance">Appearance & Localization</h3>
+                <div class="form-group">
+                    <label data-i18n="language">Language</label>
+                    <select id="language-select">
+                        <option value="en">🇬🇧 English</option>
+                        <option value="nl">🇳🇱 Nederlands</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                    </select>
+                </div>
+                <button id="theme-toggle-btn" class="btn theme-btn" data-i18n="toggleTheme">Toggle Theme</button>
+            </div>
+
+            <div class="settings-section">
+                <h3 data-i18n="cloudSyncTitle">Orbinuity Cloud Sync</h3>
+                <p id="cloud-status" class="cloud-status" data-i18n="notLoggedIn">Not connected.</p>
+                
+                <!-- Standard Login Form -->
+                <div id="cloud-login-form" class="form-group">
+                    <label data-i18n="identifier">Username or Email</label>
+                    <input type="text" id="login-identifier" placeholder="username / email">
+                    
+                    <label data-i18n="password" style="margin-top:10px;">Password</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
+                    
+                    <button id="cloud-login-btn" class="btn secondary-btn" style="margin-top:10px;" data-i18n="loginBtn">Login to Orbinuity</button>
+                    
+                    <p style="margin-top: 10px; font-size: 0.85rem;">
+                        <span data-i18n="noAccount">Don't have an account?</span> 
+                        <a href="https://orbinuity.nl/account/signup" target="_blank" data-i18n="makeAccount">Make one at Orbinuity</a>
+                    </p>
+                </div>
+
+                <!-- 2FA Form (Hidden initially) -->
+                <div id="cloud-2fa-form" class="form-group hidden">
+                    <label data-i18n="otpCode">6-Digit 2FA Code</label>
+                    <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 5px;" data-i18n="otpSentDesc">A code was sent to your email.</p>
+                    <input type="text" id="login-otp" placeholder="123456" maxlength="6">
+                    
+                    <button id="cloud-verify-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="verifyBtn">Verify & Login</button>
+                </div>
+
+                <!-- Cloud Actions (Shown when logged in) -->
+                <div id="cloud-actions" class="hidden">
+                    <button id="sync-up-btn" class="btn primary-btn" data-i18n="syncUp">Push Data to Cloud</button>
+                    <button id="sync-down-btn" class="btn theme-btn" data-i18n="syncDown" style="margin-top:10px;">Pull Data from Cloud</button>
+                    <button id="cloud-logout-btn" class="btn danger-btn" style="margin-top:10px;" data-i18n="disconnect">Disconnect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Folder Modal -->
+    <div id="share-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn close-share">&times;</span>
+            <h2 data-i18n="shareFolderTitle">Share Folder</h2>
+            <p data-i18n="shareFolderDesc" style="margin-bottom:15px; color:var(--text-light);">Look up a user by their Orbinuity username to invite them to this folder.</p>
+            
+            <div class="form-group" style="display:flex; gap:10px;">
+                <input type="text" id="share-username-input" placeholder="@username" style="flex:1;">
+                <button id="lookup-user-btn" class="btn secondary-btn" data-i18n="search">Search</button>
+            </div>
+            
+            <div id="share-result" class="hidden" style="margin-bottom:15px; padding:10px; background:var(--hover-bg); border-radius:5px;">
+                <span id="found-user-display"></span>
+                <button id="add-collaborator-btn" class="btn primary-btn" style="margin-top:10px;" data-i18n="addUser">Add User</button>
+            </div>
+
+            <h4 data-i18n="sharedWithTitle">Shared With:</h4>
+            <ul id="shared-users-list" style="margin-top:10px; list-style:none; padding:0;"></ul>
+        </div>
+    </div>
+
+    <!-- Info Block Modal -->
+    <div id="block-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h2 data-i18n="createBlockTitle">Create Info Block</h2>
+            <form id="block-form">
+                <div class="form-group">
+                    <label data-i18n="blockType">Block Type</label>
+                    <select id="block-type">
+                        <option value="person" data-i18n="typePerson">Person / Subject</option>
+                        <option value="general" data-i18n="typeGeneral">General Information</option>
+                        <option value="location" data-i18n="typeLocation">Location</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="titleName">Title / Name</label>
+                    <input type="text" id="block-title" required data-i18n="titlePlaceholder" placeholder="e.g. John Doe">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="picture">Picture / Image</label>
+                    <input type="file" id="block-image" accept="image/*">
+                    <img id="image-preview" class="hidden" alt="Preview">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="description">Description</label>
+                    <textarea id="block-description" rows="3" data-i18n="descPlaceholder" placeholder="General description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="additionalInfo">Additional Info</label>
+                    <div id="custom-fields-container"></div>
+                    <button type="button" id="add-field-btn" class="btn text-btn" data-i18n="addCustomField">+ Add Custom Field</button>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn primary-btn" data-i18n="saveBlock">Save Info Block</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
