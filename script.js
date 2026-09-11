@@ -80,6 +80,7 @@ const settingsModal = document.getElementById('settings-modal');
 const shareModal = document.getElementById('share-modal');
 const blockModal = document.getElementById('block-modal');
 const blockModalTitle = document.getElementById('block-modal-title');
+const viewBlockModal = document.getElementById('view-block-modal');
 
 const caseModal = document.getElementById('case-modal');
 const caseModalTitle = document.getElementById('case-modal-title');
@@ -383,6 +384,40 @@ function selectCase(id) {
     renderActiveCase();
 }
 
+function openViewBlockModal(block) {
+    const titleEl = document.getElementById('view-block-title');
+    const typeEl = document.getElementById('view-block-type');
+    const descEl = document.getElementById('view-block-desc');
+    const imgEl = document.getElementById('view-block-img');
+    const avatarEl = document.getElementById('view-block-avatar');
+    const fieldsEl = document.getElementById('view-block-fields');
+
+    titleEl.textContent = block.title;
+    typeEl.textContent = getTypeLabel(block.type).toUpperCase();
+    
+    if (block.description) {
+        descEl.textContent = `"${block.description}"`;
+        descEl.classList.remove('hidden');
+    } else {
+        descEl.textContent = '';
+        descEl.classList.add('hidden');
+    }
+
+    if (block.image) {
+        imgEl.src = block.image;
+        imgEl.classList.remove('hidden');
+        avatarEl.classList.add('hidden');
+    } else {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        avatarEl.textContent = block.title.substring(0, 2).toUpperCase();
+        avatarEl.classList.remove('hidden');
+    }
+
+    fieldsEl.innerHTML = block.customFields.map(f => `<div class="view-custom-field"><strong>${f.key}:</strong> <span>${f.value}</span></div>`).join('');
+    viewBlockModal.classList.remove('hidden');
+}
+
 function renderActiveCase() {
     if (!activeCaseId) {
         noCaseView.classList.remove('hidden');
@@ -410,6 +445,7 @@ function renderActiveCase() {
     currentCase.blocks.forEach(block => {
         const card = document.createElement('div');
         card.className = 'info-card';
+        card.addEventListener('click', () => openViewBlockModal(block));
 
         const cardActions = document.createElement('div');
         cardActions.className = 'card-actions';
@@ -418,13 +454,19 @@ function renderActiveCase() {
         editBtn.className = 'small-btn';
         editBtn.innerHTML = icons.edit;
         editBtn.title = getTrans('editBtn');
-        editBtn.addEventListener('click', () => editBlock(currentCase.id, block.id));
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editBlock(currentCase.id, block.id);
+        });
 
         const delBtn = document.createElement('button');
         delBtn.className = 'delete-block-btn';
         delBtn.innerHTML = icons.cross;
         delBtn.title = getTrans('confirmDeleteBlock');
-        delBtn.addEventListener('click', () => deleteBlock(currentCase.id, block.id));
+        delBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteBlock(currentCase.id, block.id);
+        });
 
         cardActions.appendChild(editBtn);
         cardActions.appendChild(delBtn);
@@ -659,8 +701,6 @@ async function autoPullCloud() {
     try {
         let roomFolders = [];
         let roomCases = [];
-
-        // 1. Pull shared rooms & cases directly from rooms.json
         try {
             const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
             if (roomData && Array.isArray(roomData.rooms)) {
@@ -678,7 +718,6 @@ async function autoPullCloud() {
             }
         } catch (e) {}
 
-        // 2. Pull personal storage (private folders & personal cases) from external.json
         let res = null;
         try {
             res = await apiCall(`/external/${APP_ID}`, 'GET');
@@ -686,6 +725,10 @@ async function autoPullCloud() {
 
         const data = res ? (res.data || res.payload || res.storage || res) : null;
         const folderMap = new Map();
+
+        folders.forEach(f => {
+            if (f.id) folderMap.set(f.id, f);
+        });
 
         folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
 
@@ -712,8 +755,10 @@ async function autoPullCloud() {
             await autoPushCloud();
         }
 
-        // 3. Set cases directly from server payload (Rooms + Personal)
-        cases = [...personalCases, ...roomCases];
+        const caseMap = new Map();
+        cases.forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
+        [...personalCases, ...roomCases].forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
+        cases = Array.from(caseMap.values());
 
         roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
 
@@ -941,6 +986,7 @@ document.getElementById('open-settings-btn').addEventListener('click', () => set
 document.querySelectorAll('.close-settings').forEach(b => b.addEventListener('click', () => settingsModal.classList.add('hidden')));
 document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click', () => shareModal.classList.add('hidden')));
 document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
+document.getElementById('close-view-block-modal').addEventListener('click', () => viewBlockModal.classList.add('hidden'));
 
 function applyLanguage(lang, save = true) {
     currentLang = lang; 
