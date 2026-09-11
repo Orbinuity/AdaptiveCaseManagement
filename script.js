@@ -8,6 +8,22 @@ const icons = {
     cross: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
 };
 
+function showToast(msg) {
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-notification';
+        toast.className = 'toast-notification hidden';
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 3000);
+}
+
 function setCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -90,7 +106,7 @@ const translations = {
         editCaseBtn: "Edit Case", createCaseTitle: "Create Case", editCaseTitle: "Edit Case", saveCase: "Save Case",
         confirmDeleteBlock: "Delete this block?", confirmDeleteCase: "Delete this case?", confirmDeleteFolder: "Delete this folder and all its cases?", confirmRemoveMember: "Are you sure you want to remove this user?",
         titlePlaceholder: "Case Name", descPlaceholder: "Case description...", keyPlaceholder: "Key", valPlaceholder: "Value",
-        usernamePlaceholder: "@username", loginIdentifierPlaceholder: "username / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        usernamePlaceholder: "username", loginIdentifierPlaceholder: "username / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Enter identifier and password.", alert2faReq: "Enter 2FA Code.", alertInvalid2fa: "Invalid 2FA code.",
         alertLoginFail: "Login failed. Please check your credentials.", alertProfileFail: "Failed to load user profile after login.",
         alertAddMemberSuccess: "Added user successfully.", alertAddMemberFail: "Failed to add member to room. Make sure username is correct.", alertRemoveMemberFail: "Failed to remove member from room.",
@@ -115,7 +131,7 @@ const translations = {
         editCaseBtn: "Zaak Bewerken", createCaseTitle: "Zaak Aanmaken", editCaseTitle: "Zaak Bewerken", saveCase: "Zaak Opslaan",
         confirmDeleteBlock: "Weet u zeker dat u dit info blok wilt verwijderen?", confirmDeleteCase: "Weet u zeker dat u deze zaak wilt verwijderen?", confirmDeleteFolder: "Weet u zeker dat u deze map en alle zaken wilt verwijderen?", confirmRemoveMember: "Weet u zeker dat u deze gebruiker wilt verwijderen?",
         titlePlaceholder: "Zaaknaam", descPlaceholder: "Zaak beschrijving...", keyPlaceholder: "Sleutel", valPlaceholder: "Waarde",
-        usernamePlaceholder: "@gebruikersnaam", loginIdentifierPlaceholder: "gebruikersnaam / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        usernamePlaceholder: "gebruikersnaam", loginIdentifierPlaceholder: "gebruikersnaam / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Voer gebruikersnaam/e-mail en wachtwoord in.", alert2faReq: "Voer 2FA-code in.", alertInvalid2fa: "Ongeldige 2FA-code.",
         alertLoginFail: "Inloggen mislukt. Controleer uw gegevens.", alertProfileFail: "Laden van gebruikersprofiel mislukt na inloggen.",
         alertAddMemberSuccess: "Gebruiker succesvol toegevoegd.", alertAddMemberFail: "Toevoegen van lid mislukt. Controleer de gebruikersnaam.", alertRemoveMemberFail: "Verwijderen van lid mislukt.",
@@ -140,7 +156,7 @@ const translations = {
         editCaseBtn: "Editar Caso", createCaseTitle: "Crear Caso", editCaseTitle: "Editar Caso", saveCase: "Guardar Caso",
         confirmDeleteBlock: "¿Eliminar este bloque?", confirmDeleteCase: "¿Eliminar este caso?", confirmDeleteFolder: "¿Eliminar esta carpeta y todos sus casos?", confirmRemoveMember: "¿Está seguro de que desea eliminar a este usuario?",
         titlePlaceholder: "Nombre del Caso", descPlaceholder: "Descripción del caso...", keyPlaceholder: "Clave", valPlaceholder: "Valor",
-        usernamePlaceholder: "@usuario", loginIdentifierPlaceholder: "usuario / correo", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        usernamePlaceholder: "usuario", loginIdentifierPlaceholder: "usuario / correo", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Ingrese usuario y contraseña.", alert2faReq: "Ingrese el código 2FA.", alertInvalid2fa: "Código 2FA inválido.",
         alertLoginFail: "Error de inicio de sesión. Verifique sus credenciales.", alertProfileFail: "Error al cargar el perfil de usuario después de iniciar sesión.",
         alertAddMemberSuccess: "Usuario añadido con éxito.", alertAddMemberFail: "Error al añadir miembro. Verifique el nombre de usuario.", alertRemoveMemberFail: "Error al eliminar miembro del aula.",
@@ -165,7 +181,7 @@ const translations = {
         editCaseBtn: "Modifier le Cas", createCaseTitle: "Créer un Cas", editCaseTitle: "Modifier le Cas", saveCase: "Enregistrer",
         confirmDeleteBlock: "Supprimer ce bloc ?", confirmDeleteCase: "Supprimer ce cas ?", confirmDeleteFolder: "Supprimer ce dossier et tous ses cas ?", confirmRemoveMember: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
         titlePlaceholder: "Nom du Cas", descPlaceholder: "Description du cas...", keyPlaceholder: "Clé", valPlaceholder: "Valeur",
-        usernamePlaceholder: "@utilisateur", loginIdentifierPlaceholder: "nom d'utilisateur / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        usernamePlaceholder: "utilisateur", loginIdentifierPlaceholder: "nom d'utilisateur / email", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Veuillez saisir votre identifiant et votre mot de passe.", alert2faReq: "Veuillez saisir le code 2FA.", alertInvalid2fa: "Code 2FA invalide.",
         alertLoginFail: "Échec de la connexion. Veuillez vérifier vos identifiants.", alertProfileFail: "Échec du chargement du profil utilisateur après la connexion.",
         alertAddMemberSuccess: "Utilisateur ajouté avec succès.", alertAddMemberFail: "Échec de l'ajout du membre. Vérifiez le nom d'utilisateur.", alertRemoveMemberFail: "Échec de la suppression du membre.",
@@ -190,7 +206,7 @@ const translations = {
         editCaseBtn: "Fall Bearbeiten", createCaseTitle: "Fall Erstellen", editCaseTitle: "Fall Bearbeiten", saveCase: "Fall Speichern",
         confirmDeleteBlock: "Diesen Block löschen?", confirmDeleteCase: "Diesen Fall löschen?", confirmDeleteFolder: "Diesen Ordner und alle Fälle löschen?", confirmRemoveMember: "Sind Sie sicher, dass Sie diesen Benutzer entfernen möchten?",
         titlePlaceholder: "Fallname", descPlaceholder: "Fallbeschreibung...", keyPlaceholder: "Schlüssel", valPlaceholder: "Wert",
-        usernamePlaceholder: "@benutzername", loginIdentifierPlaceholder: "benutzername / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
+        usernamePlaceholder: "benutzername", loginIdentifierPlaceholder: "benutzername / e-mail", passwordPlaceholder: "••••••••", otpPlaceholder: "123456",
         alertLoginReq: "Benutzername und Passwort eingeben.", alert2faReq: "2FA-Code eingeben.", alertInvalid2fa: "Ungültiger 2FA-Code.",
         alertLoginFail: "Anmeldung fehlgeschlagen. Bitte Anmeldedaten überprüfen.", alertProfileFail: "Profil konnte nach der Anmeldung nicht geladen werden.",
         alertAddMemberSuccess: "Benutzer erfolgreich hinzugefügt.", alertAddMemberFail: "Mitglied konnte nicht hinzugefügt werden. Benutzernamen überprüfen.", alertRemoveMemberFail: "Fehler beim Entfernen des Mitglieds.",
@@ -346,7 +362,7 @@ async function renameFolder(id, currentName) {
             try {
                 await apiCall(`/external/rooms/${id}`, 'PUT', { name: cleanName });
             } catch (e) {
-                alert(getTrans('alertRenameRoomFail'));
+                showToast(getTrans('alertRenameRoomFail'));
                 return;
             }
         }
@@ -468,7 +484,7 @@ document.getElementById('new-folder-btn').addEventListener('click', async () => 
                 return;
             }
         } catch (e) {
-            alert(getTrans('alertCreateFolderFail'));
+            showToast(getTrans('alertCreateFolderFail'));
             return;
         }
     }
@@ -714,7 +730,7 @@ document.getElementById('cloud-login-btn').addEventListener('click', async () =>
     const identifier = document.getElementById('login-identifier').value.trim();
     const password = document.getElementById('login-password').value.trim();
     
-    if(!identifier || !password) return alert(getTrans('alertLoginReq'));
+    if(!identifier || !password) return showToast(getTrans('alertLoginReq'));
     
     try {
         const res = await fetch(`${API_BASE}/auth/login`, {
@@ -736,13 +752,13 @@ document.getElementById('cloud-login-btn').addEventListener('click', async () =>
             await finalizeLogin(data.token || data);
         }
     } catch (e) {
-        alert(e.message);
+        showToast(e.message);
     }
 });
 
 document.getElementById('cloud-verify-btn').addEventListener('click', async () => {
     const code = document.getElementById('login-otp').value.trim();
-    if(!code || !pendingLoginUserId) return alert(getTrans('alert2faReq'));
+    if(!code || !pendingLoginUserId) return showToast(getTrans('alert2faReq'));
 
     try {
         const res = await fetch(`${API_BASE}/auth/login/2fa`, {
@@ -756,7 +772,7 @@ document.getElementById('cloud-verify-btn').addEventListener('click', async () =
         const data = await res.json();
         await finalizeLogin(data.token || data);
     } catch (e) {
-        alert(e.message);
+        showToast(e.message);
     }
 });
 
@@ -777,7 +793,7 @@ async function finalizeLogin(tokenObject) {
     } catch (e) {
         orbinuityToken = null;
         eraseCookie('acm_token');
-        alert(getTrans('alertProfileFail'));
+        showToast(getTrans('alertProfileFail'));
     }
 }
 
@@ -799,7 +815,7 @@ document.getElementById('cloud-logout-btn').addEventListener('click', () => {
 function updateCloudUI() {
     const statusText = document.getElementById('cloud-status');
     if (currentUser) {
-        statusText.textContent = `${getTrans('loggedInAs')} @${currentUser.username}`;
+        statusText.textContent = `${getTrans('loggedInAs')} ${currentUser.username}`;
     } else {
         statusText.textContent = getTrans('notLoggedIn');
     }
@@ -854,7 +870,7 @@ function renderSharedUsersList(folder) {
         const nameSpan = document.createElement('span');
         const isHost = u.userId === String(folder.hostId);
         const roleBadge = isHost ? ` (${getTrans('ownerTag')})` : '';
-        nameSpan.textContent = `${u.displayName} (@${u.username})${roleBadge}`;
+        nameSpan.textContent = `${u.displayName} (${u.username})${roleBadge}`;
         if (isHost) {
             nameSpan.style.fontWeight = 'bold';
         }
@@ -884,24 +900,24 @@ async function removeMemberFromRoom(roomId, targetUserId) {
         const updatedFolder = folders.find(f => f.id === roomId);
         renderSharedUsersList(updatedFolder);
     } catch (e) {
-        alert(getTrans('alertRemoveMemberFail'));
+        showToast(getTrans('alertRemoveMemberFail'));
     }
 }
 
 document.getElementById('add-member-btn').addEventListener('click', async () => {
-    if(!orbinuityToken) return alert(getTrans('alertCloudConnectReq'));
+    if(!orbinuityToken) return showToast(getTrans('alertCloudConnectReq'));
     const username = document.getElementById('share-username-input').value.replace('@','').trim();
     if(!username || !targetShareFolderId) return;
 
     try {
         const res = await apiCall(`/external/rooms/${targetShareFolderId}/members`, 'POST', { username });
-        alert(res.message || getTrans('alertAddMemberSuccess'));
+        showToast(res.message || getTrans('alertAddMemberSuccess'));
         document.getElementById('share-username-input').value = '';
         await autoPullCloud();
         const updatedFolder = folders.find(f => f.id === targetShareFolderId);
         renderSharedUsersList(updatedFolder);
     } catch (e) { 
-        alert(getTrans('alertAddMemberFail')); 
+        showToast(getTrans('alertAddMemberFail')); 
     }
 });
 
