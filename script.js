@@ -648,10 +648,22 @@ function editCase(caseId) {
 
 async function deleteFolder(id) {
     if (confirm(getTrans('confirmDeleteFolder'))) {
+        if (id.startsWith('room_')) {
+            if (orbinuityToken) {
+                try {
+                    await apiCall(`/external/rooms/${id}`, 'DELETE');
+                } catch (e) {
+                    showToast(getTrans('alertRemoveMemberFail'));
+                    return;
+                }
+            }
+        }
         folders = folders.filter(f => f.id !== id);
         cases = cases.filter(c => c.folderId !== id);
-        if(cases.length === 0) activeCaseId = null;
-        await saveState(); renderSidebar(); renderActiveCase();
+        if (!cases.some(c => c.id === activeCaseId)) activeCaseId = null;
+        await saveState();
+        renderSidebar();
+        renderActiveCase();
     }
 }
 
@@ -780,10 +792,6 @@ async function autoPullCloud() {
         const data = res ? (res.data || res.payload || res.storage || res) : null;
         const folderMap = new Map();
 
-        folders.forEach(f => {
-            if (f.id) folderMap.set(f.id, f);
-        });
-
         folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
 
         let personalCases = [];
@@ -809,10 +817,7 @@ async function autoPullCloud() {
             await autoPushCloud();
         }
 
-        const caseMap = new Map();
-        cases.forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
-        [...personalCases, ...roomCases].forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
-        cases = Array.from(caseMap.values());
+        cases = [...personalCases, ...roomCases];
 
         roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
 
