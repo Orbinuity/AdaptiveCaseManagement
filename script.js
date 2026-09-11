@@ -85,6 +85,11 @@ function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
     });
 }
 
+function addListener(id, event, fn) {
+    const el = typeof id === 'string' ? document.getElementById(id) : id;
+    if (el) el.addEventListener(event, fn);
+}
+
 let folders = [{ id: 'default', name: 'My Cases', members: [] }];
 let cases = [];
 
@@ -275,21 +280,6 @@ function openImageLightbox(src) {
     lightboxImg.src = src;
     imageLightboxModal.classList.remove('hidden');
 }
-
-closeLightboxModal.addEventListener('click', () => {
-    imageLightboxModal.classList.add('hidden');
-});
-
-imageLightboxModal.addEventListener('click', (e) => {
-    if (e.target === imageLightboxModal) {
-        imageLightboxModal.classList.add('hidden');
-    }
-});
-
-document.getElementById('view-block-img').addEventListener('click', () => {
-    const src = document.getElementById('view-block-img').src;
-    if (src) openImageLightbox(src);
-});
 
 async function init() {
     applyTheme(currentTheme);
@@ -584,44 +574,6 @@ function renderActiveCase() {
     });
 }
 
-document.getElementById('new-folder-btn').addEventListener('click', async () => {
-    const name = prompt(getTrans('promptNewFolder'));
-    if (!name || !name.trim()) return;
-
-    const cleanName = name.trim();
-
-    if (orbinuityToken) {
-        try {
-            const res = await apiCall('/external/rooms', 'POST', { 
-                name: cleanName, 
-                description: "", 
-                appId: APP_ID 
-            });
-
-            if (res && res.room) {
-                const newRoomFolder = { 
-                    id: res.room.id, 
-                    name: res.room.name, 
-                    hostId: res.room.hostId,
-                    members: res.room.members || [] 
-                };
-                
-                folders.push(newRoomFolder);
-                await saveState();
-                renderSidebar();
-                return;
-            }
-        } catch (e) {
-            showToast(getTrans('alertCreateFolderFail'));
-            return;
-        }
-    }
-
-    folders.push({ id: generateId(), name: cleanName, members: [] });
-    await saveState(); 
-    renderSidebar();
-});
-
 function createCase(folderId) {
     editingCaseId = null;
     targetFolderIdForNewCase = folderId;
@@ -640,49 +592,6 @@ function editCase(caseId) {
     caseDescInput.value = c.description || '';
     caseModal.classList.remove('hidden');
 }
-
-document.getElementById('edit-case-btn').addEventListener('click', () => {
-    if (activeCaseId) editCase(activeCaseId);
-});
-
-caseForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-
-    const title = caseTitleInput.value.trim();
-    const description = caseDescInput.value.trim();
-    if (!title) return;
-
-    isSubmitting = true;
-
-    if (editingCaseId) {
-        const c = cases.find(item => item.id === editingCaseId);
-        if (c) {
-            c.title = title;
-            c.description = description;
-        }
-        editingCaseId = null;
-    } else {
-        const newCase = {
-            id: generateId(),
-            folderId: targetFolderIdForNewCase || 'default',
-            title,
-            description,
-            blocks: []
-        };
-        cases.push(newCase);
-        activeCaseId = newCase.id;
-    }
-
-    try {
-        await saveState();
-        renderSidebar();
-        renderActiveCase();
-        caseModal.classList.add('hidden');
-    } finally {
-        isSubmitting = false;
-    }
-});
 
 async function deleteFolder(id) {
     if (confirm(getTrans('confirmDeleteFolder'))) {
@@ -888,56 +797,6 @@ function startAutoSyncTimer() {
     }, 10000);
 }
 
-document.getElementById('cloud-login-btn').addEventListener('click', async () => {
-    const identifier = document.getElementById('login-identifier').value.trim();
-    const password = document.getElementById('login-password').value.trim();
-    
-    if(!identifier || !password) return showToast(getTrans('alertLoginReq'));
-    
-    try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier, password })
-        });
-        
-        if (!res.ok) throw new Error(getTrans('alertLoginFail'));
-        
-        const data = await res.json();
-        
-        if (data.requiresTwoFactor) {
-            pendingLoginUserId = data.userId;
-            document.getElementById('cloud-login-form').classList.add('hidden');
-            document.getElementById('cloud-2fa-form').classList.remove('hidden');
-        } 
-        else {
-            await finalizeLogin(data.token || data);
-        }
-    } catch (e) {
-        showToast(e.message);
-    }
-});
-
-document.getElementById('cloud-verify-btn').addEventListener('click', async () => {
-    const code = document.getElementById('login-otp').value.trim();
-    if(!code || !pendingLoginUserId) return showToast(getTrans('alert2faReq'));
-
-    try {
-        const res = await fetch(`${API_BASE}/auth/login/2fa`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: pendingLoginUserId, code })
-        });
-        
-        if (!res.ok) throw new Error(getTrans('alertInvalid2fa'));
-        
-        const data = await res.json();
-        await finalizeLogin(data.token || data);
-    } catch (e) {
-        showToast(e.message);
-    }
-});
-
 async function finalizeLogin(tokenObject) {
     const actualToken = typeof tokenObject === 'string' ? tokenObject : tokenObject.token;
     orbinuityToken = actualToken;
@@ -958,21 +817,6 @@ async function finalizeLogin(tokenObject) {
         showToast(getTrans('alertProfileFail'));
     }
 }
-
-document.getElementById('cloud-logout-btn').addEventListener('click', () => {
-    if (autoSyncInterval) clearInterval(autoSyncInterval);
-    orbinuityToken = null; 
-    currentUser = null;
-    eraseCookie('acm_token');
-    authScreen.classList.remove('hidden');
-    appContainer.classList.add('hidden');
-    settingsModal.classList.add('hidden');
-    document.getElementById('cloud-login-form').classList.remove('hidden');
-    document.getElementById('cloud-2fa-form').classList.add('hidden');
-    document.getElementById('login-identifier').value = '';
-    document.getElementById('login-password').value = '';
-    document.getElementById('login-otp').value = '';
-});
 
 function updateCloudUI() {
     const statusText = document.getElementById('cloud-status');
@@ -1066,7 +910,111 @@ async function removeMemberFromRoom(roomId, targetUserId) {
     }
 }
 
-document.getElementById('add-member-btn').addEventListener('click', async () => {
+function applyLanguage(lang, save = true) {
+    currentLang = lang; 
+    if (languageSelect) languageSelect.value = lang; 
+    if (authLanguageSelect) authLanguageSelect.value = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const val = getTrans(key);
+        if (val) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+            else el.textContent = val;
+        }
+    });
+    renderSidebar();
+    if (activeCaseId) renderActiveCase();
+    updateCloudUI();
+    if (save) autoPushCloud();
+}
+
+function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
+
+addListener(closeLightboxModal, 'click', () => {
+    if (imageLightboxModal) imageLightboxModal.classList.add('hidden');
+});
+
+addListener(imageLightboxModal, 'click', (e) => {
+    if (e.target === imageLightboxModal) {
+        imageLightboxModal.classList.add('hidden');
+    }
+});
+
+addListener('view-block-img', 'click', () => {
+    const img = document.getElementById('view-block-img');
+    if (img && img.src) openImageLightbox(img.src);
+});
+
+addListener('close-view-block-modal', 'click', () => {
+    if (viewBlockModal) viewBlockModal.classList.add('hidden');
+});
+
+addListener('cloud-login-btn', 'click', async () => {
+    const identifier = document.getElementById('login-identifier').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    
+    if(!identifier || !password) return showToast(getTrans('alertLoginReq'));
+    
+    try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ identifier, password })
+        });
+        
+        if (!res.ok) throw new Error(getTrans('alertLoginFail'));
+        
+        const data = await res.json();
+        
+        if (data.requiresTwoFactor) {
+            pendingLoginUserId = data.userId;
+            document.getElementById('cloud-login-form').classList.add('hidden');
+            document.getElementById('cloud-2fa-form').classList.remove('hidden');
+        } 
+        else {
+            await finalizeLogin(data.token || data);
+        }
+    } catch (e) {
+        showToast(e.message);
+    }
+});
+
+addListener('cloud-verify-btn', 'click', async () => {
+    const code = document.getElementById('login-otp').value.trim();
+    if(!code || !pendingLoginUserId) return showToast(getTrans('alert2faReq'));
+
+    try {
+        const res = await fetch(`${API_BASE}/auth/login/2fa`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: pendingLoginUserId, code })
+        });
+        
+        if (!res.ok) throw new Error(getTrans('alertInvalid2fa'));
+        
+        const data = await res.json();
+        await finalizeLogin(data.token || data);
+    } catch (e) {
+        showToast(e.message);
+    }
+});
+
+addListener('cloud-logout-btn', 'click', () => {
+    if (autoSyncInterval) clearInterval(autoSyncInterval);
+    orbinuityToken = null; 
+    currentUser = null;
+    eraseCookie('acm_token');
+    authScreen.classList.remove('hidden');
+    appContainer.classList.add('hidden');
+    settingsModal.classList.add('hidden');
+    document.getElementById('cloud-login-form').classList.remove('hidden');
+    document.getElementById('cloud-2fa-form').classList.add('hidden');
+    document.getElementById('login-identifier').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-otp').value = '';
+});
+
+addListener('add-member-btn', 'click', async () => {
     if(!orbinuityToken) return showToast(getTrans('alertCloudConnectReq'));
     const username = document.getElementById('share-username-input').value.replace('@','').trim();
     if(!username || !targetShareFolderId) return;
@@ -1083,40 +1031,21 @@ document.getElementById('add-member-btn').addEventListener('click', async () => 
     }
 });
 
-document.getElementById('open-settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
-document.querySelectorAll('.close-settings').forEach(b => b.addEventListener('click', () => settingsModal.classList.add('hidden')));
-document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click', () => shareModal.classList.add('hidden')));
-document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal.classList.add('hidden')));
-document.getElementById('close-view-block-modal').addEventListener('click', () => viewBlockModal.classList.add('hidden'));
+addListener('open-settings-btn', 'click', () => settingsModal?.classList.remove('hidden'));
+document.querySelectorAll('.close-settings').forEach(b => b.addEventListener('click', () => settingsModal?.classList.add('hidden')));
+document.querySelectorAll('.close-share').forEach(b => b.addEventListener('click', () => shareModal?.classList.add('hidden')));
+document.querySelectorAll('.close-case-modal').forEach(b => b.addEventListener('click', () => caseModal?.classList.add('hidden')));
 
-function applyLanguage(lang, save = true) {
-    currentLang = lang; 
-    languageSelect.value = lang; 
-    authLanguageSelect.value = lang;
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        const val = getTrans(key);
-        if (val) {
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
-            else el.textContent = val;
-        }
-    });
-    renderSidebar();
-    if (activeCaseId) renderActiveCase();
-    updateCloudUI();
-    if (save) autoPushCloud();
-}
-languageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
-authLanguageSelect.addEventListener('change', (e) => applyLanguage(e.target.value));
+addListener(languageSelect, 'change', (e) => applyLanguage(e.target.value));
+addListener(authLanguageSelect, 'change', (e) => applyLanguage(e.target.value));
 
-function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
-document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+addListener('theme-toggle-btn', 'click', () => {
     currentTheme = currentTheme === 'light' ? 'dark' : 'light'; 
     applyTheme(currentTheme);
     autoPushCloud();
 });
 
-document.getElementById('add-block-btn').addEventListener('click', () => {
+addListener('add-block-btn', 'click', () => {
     editingBlockId = null;
     blockModalTitle.textContent = getTrans('createBlockTitle');
     document.getElementById('block-form').reset();
@@ -1126,12 +1055,12 @@ document.getElementById('add-block-btn').addEventListener('click', () => {
     blockModal.classList.remove('hidden');
 });
 
-document.getElementById('close-modal').addEventListener('click', () => {
+addListener('close-modal', 'click', () => {
     editingBlockId = null;
     blockModal.classList.add('hidden');
 });
 
-document.getElementById('block-image').addEventListener('change', async function(e) {
+addListener('block-image', 'change', async function(e) {
     const file = e.target.files[0];
     if (file) {
         currentImageDataUrl = await compressImage(file, 800, 800, 0.7);
@@ -1141,9 +1070,52 @@ document.getElementById('block-image').addEventListener('change', async function
     }
 });
 
-document.getElementById('add-field-btn').addEventListener('click', () => addCustomFieldRow());
+addListener('add-field-btn', 'click', () => addCustomFieldRow());
 
-document.getElementById('block-form').addEventListener('submit', async (e) => {
+addListener('edit-case-btn', 'click', () => {
+    if (activeCaseId) editCase(activeCaseId);
+});
+
+addListener(caseForm, 'submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const title = caseTitleInput.value.trim();
+    const description = caseDescInput.value.trim();
+    if (!title) return;
+
+    isSubmitting = true;
+
+    if (editingCaseId) {
+        const c = cases.find(item => item.id === editingCaseId);
+        if (c) {
+            c.title = title;
+            c.description = description;
+        }
+        editingCaseId = null;
+    } else {
+        const newCase = {
+            id: generateId(),
+            folderId: targetFolderIdForNewCase || 'default',
+            title,
+            description,
+            blocks: []
+        };
+        cases.push(newCase);
+        activeCaseId = newCase.id;
+    }
+
+    try {
+        await saveState();
+        renderSidebar();
+        renderActiveCase();
+        caseModal.classList.add('hidden');
+    } finally {
+        isSubmitting = false;
+    }
+});
+
+addListener('block-form', 'submit', async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
@@ -1154,8 +1126,9 @@ document.getElementById('block-form').addEventListener('submit', async (e) => {
 
     const customFields = [];
     document.querySelectorAll('.custom-field-input').forEach(row => {
-        const key = row.querySelector('.field-key').value; const val = row.querySelector('.field-val').value;
-        if(key && val) customFields.push({ key, value: val });
+        const key = row.querySelector('.field-key').value;
+        const val = row.querySelector('.field-val').value;
+        if (key && val) customFields.push({ key, value: val });
     });
 
     if (editingBlockId) {
