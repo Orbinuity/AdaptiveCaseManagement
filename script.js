@@ -659,6 +659,8 @@ async function autoPullCloud() {
     try {
         let roomFolders = [];
         let roomCases = [];
+
+        // 1. Pull shared rooms & cases directly from rooms.json
         try {
             const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
             if (roomData && Array.isArray(roomData.rooms)) {
@@ -676,6 +678,7 @@ async function autoPullCloud() {
             }
         } catch (e) {}
 
+        // 2. Pull personal storage (private folders & personal cases) from external.json
         let res = null;
         try {
             res = await apiCall(`/external/${APP_ID}`, 'GET');
@@ -683,10 +686,6 @@ async function autoPullCloud() {
 
         const data = res ? (res.data || res.payload || res.storage || res) : null;
         const folderMap = new Map();
-
-        folders.forEach(f => {
-            if (f.id) folderMap.set(f.id, f);
-        });
 
         folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
 
@@ -713,10 +712,8 @@ async function autoPullCloud() {
             await autoPushCloud();
         }
 
-        const caseMap = new Map();
-        cases.forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
-        [...personalCases, ...roomCases].forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
-        cases = Array.from(caseMap.values());
+        // 3. Set cases directly from server payload (Rooms + Personal)
+        cases = [...personalCases, ...roomCases];
 
         roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
 
