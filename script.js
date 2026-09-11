@@ -322,7 +322,7 @@ function renderSidebar() {
         const ul = document.createElement('ul');
         ul.className = 'case-list';
         
-        const folderCases = cases.filter(c => c.folderId === folder.id);
+        const folderCases = cases.filter(c => (c.folderId || 'default') === folder.id);
         folderCases.forEach(c => {
             const li = document.createElement('li');
             li.className = `case-item ${c.id === activeCaseId ? 'active' : ''}`;
@@ -517,7 +517,7 @@ document.getElementById('edit-case-btn').addEventListener('click', () => {
     if (activeCaseId) editCase(activeCaseId);
 });
 
-caseForm.addEventListener('submit', (e) => {
+caseForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = caseTitleInput.value.trim();
     const description = caseDescInput.value.trim();
@@ -542,35 +542,35 @@ caseForm.addEventListener('submit', (e) => {
         activeCaseId = newCase.id;
     }
 
-    saveState();
+    await saveState();
     renderSidebar();
     renderActiveCase();
     caseModal.classList.add('hidden');
 });
 
-function deleteFolder(id) {
+async function deleteFolder(id) {
     if (confirm(getTrans('confirmDeleteFolder'))) {
         folders = folders.filter(f => f.id !== id);
         cases = cases.filter(c => c.folderId !== id);
         if(cases.length === 0) activeCaseId = null;
-        saveState(); renderSidebar(); renderActiveCase();
+        await saveState(); renderSidebar(); renderActiveCase();
     }
 }
 
-function deleteCase(id) {
+async function deleteCase(id) {
     if (confirm(getTrans('confirmDeleteCase'))) {
         cases = cases.filter(c => c.id !== id);
         if (activeCaseId === id) activeCaseId = cases.length > 0 ? cases[0].id : null;
-        saveState(); renderSidebar(); renderActiveCase();
+        await saveState(); renderSidebar(); renderActiveCase();
     }
 }
 
-function deleteBlock(caseId, blockId) {
+async function deleteBlock(caseId, blockId) {
     if (confirm(getTrans('confirmDeleteBlock'))) {
         const c = cases.find(c => c.id === caseId);
         if (c) {
             c.blocks = c.blocks.filter(b => b.id !== blockId);
-            saveState(); renderActiveCase();
+            await saveState(); renderActiveCase();
         }
     }
 }
@@ -648,8 +648,8 @@ async function autoPushCloud() {
 
         const roomFolders = folders.filter(f => f.id && f.id.startsWith('room_'));
         for (const room of roomFolders) {
-            const roomCases = cases.filter(c => c.folderId === room.id);
-            await apiCall(`/external/rooms/${room.id}`, 'PUT', { cases: roomCases });
+            const roomCases = cases.filter(c => (c.folderId || 'default') === room.id);
+            await apiCall(`/external/rooms/${room.id}`, 'PUT', { name: room.name, cases: roomCases });
         }
     } catch (e) {}
 }
@@ -713,7 +713,10 @@ async function autoPullCloud() {
             await autoPushCloud();
         }
 
-        cases = [...personalCases, ...roomCases];
+        const caseMap = new Map();
+        cases.forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
+        [...personalCases, ...roomCases].forEach(c => { if (c && c.id) caseMap.set(c.id, c); });
+        cases = Array.from(caseMap.values());
 
         roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
 
@@ -999,7 +1002,7 @@ document.getElementById('block-image').addEventListener('change', function(e) {
 
 document.getElementById('add-field-btn').addEventListener('click', () => addCustomFieldRow());
 
-document.getElementById('block-form').addEventListener('submit', (e) => {
+document.getElementById('block-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const customFields = [];
     document.querySelectorAll('.custom-field-input').forEach(row => {
@@ -1032,7 +1035,9 @@ document.getElementById('block-form').addEventListener('submit', (e) => {
         c.blocks.push(newBlock);
     }
 
-    saveState(); renderActiveCase(); blockModal.classList.add('hidden');
+    await saveState(); 
+    renderActiveCase(); 
+    blockModal.classList.add('hidden');
 });
 
 init();
