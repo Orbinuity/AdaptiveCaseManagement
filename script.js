@@ -97,7 +97,7 @@ let activeCaseId = null;
 let editingBlockId = null;
 let editingCaseId = null;
 let targetFolderIdForNewCase = null;
-let currentImageDataUrl = null;
+let currentImageDataUrls = [];
 let currentTheme = 'light';
 let currentLang = 'en';
 
@@ -140,8 +140,8 @@ const translations = {
     en: {
         appTitle: "ACM System", defaultFolder: "My Cases", newFolder: "+ New Folder", emptyState: "Select or create a case to begin",
         addInfoBlock: "+ Add Info Block", createBlockTitle: "Create Info Block", editBlockTitle: "Edit Info Block", editBtn: "Edit",
-        blockType: "Block Type", typePerson: "Person / Subject", typeGeneral: "General Information", typeLocation: "Location",
-        titleName: "Title / Name", picture: "Picture / Image", description: "Description",
+        blockType: "Block Type", typePerson: "Person / Subject", typeGeneral: "General Information", typeLocation: "Location", typeGallery: "Images / Gallery",
+        titleName: "Title / Name", picture: "Picture / Images", description: "Description",
         additionalInfo: "Custom Fields", addCustomField: "+ Add Custom Field", saveBlock: "Save Info Block",
         settingsTitle: "Settings", settingsBtn: "Settings", appearance: "Appearance & Localization", language: "Language",
         toggleTheme: "Toggle Theme", cloudSyncTitle: "Orbinuity Cloud Sync",
@@ -165,8 +165,8 @@ const translations = {
     nl: {
         appTitle: "ACM Systeem", defaultFolder: "Mijn Zaken", newFolder: "+ Nieuwe Map", emptyState: "Selecteer een zaak om te beginnen",
         addInfoBlock: "+ Info Blok", createBlockTitle: "Info Blok Aanmaken", editBlockTitle: "Info Blok Bewerken", editBtn: "Bewerken",
-        blockType: "Blok Type", typePerson: "Persoon / Onderwerp", typeGeneral: "Algemene Informatie", typeLocation: "Locatie",
-        titleName: "Titel / Naam", picture: "Afbeelding", description: "Beschrijving",
+        blockType: "Blok Type", typePerson: "Persoon / Onderwerp", typeGeneral: "Algemene Informatie", typeLocation: "Locatie", typeGallery: "Afbeeldingen / Galerie",
+        titleName: "Titel / Naam", picture: "Afbeeldingen", description: "Beschrijving",
         additionalInfo: "Aangepaste Velden", addCustomField: "+ Aangepast Veld", saveBlock: "Info Blok Opslaan",
         settingsTitle: "Instellingen", settingsBtn: "Instellingen", appearance: "Uiterlijk & Lokalisatie", language: "Taal",
         toggleTheme: "Thema Wisselen", cloudSyncTitle: "Orbinuity Cloud Sync",
@@ -190,8 +190,8 @@ const translations = {
     es: {
         appTitle: "Sistema ACM", defaultFolder: "Mis Casos", newFolder: "+ Nueva Carpeta", emptyState: "Seleccione un caso para comenzar",
         addInfoBlock: "+ Bloque de Info", createBlockTitle: "Crear Bloque", editBlockTitle: "Editar Bloque", editBtn: "Editar",
-        blockType: "Tipo de Bloque", typePerson: "Persona / Sujeto", typeGeneral: "Información General", typeLocation: "Ubicación",
-        titleName: "Título / Nombre", picture: "Imagen", description: "Descripción",
+        blockType: "Tipo de Bloque", typePerson: "Persona / Sujeto", typeGeneral: "Información General", typeLocation: "Ubicación", typeGallery: "Imágenes / Galería",
+        titleName: "Título / Nombre", picture: "Imágenes", description: "Descripción",
         additionalInfo: "Campos Personalizados", addCustomField: "+ Añadir Campo", saveBlock: "Guardar Bloque",
         settingsTitle: "Configuración", settingsBtn: "Ajustes", appearance: "Apariencia y Localización", language: "Idioma",
         toggleTheme: "Cambiar Tema", cloudSyncTitle: "Nube Orbinuity",
@@ -215,8 +215,8 @@ const translations = {
     fr: {
         appTitle: "Système ACM", defaultFolder: "Mes Dossiers", newFolder: "+ Nouveau Dossier", emptyState: "Sélectionnez un cas pour commencer",
         addInfoBlock: "+ Ajouter un Bloc", createBlockTitle: "Créer un Bloc", editBlockTitle: "Modifier le Bloc", editBtn: "Modifier",
-        blockType: "Type de Bloc", typePerson: "Personne / Sujet", typeGeneral: "Informations Générales", typeLocation: "Emplacement",
-        titleName: "Titre / Nom", picture: "Image", description: "Description",
+        blockType: "Type de Bloc", typePerson: "Personne / Sujet", typeGeneral: "Informations Générales", typeLocation: "Emplacement", typeGallery: "Images / Galerie",
+        titleName: "Titre / Nom", picture: "Images", description: "Description",
         additionalInfo: "Champs Personnalisés", addCustomField: "+ Ajouter un Champ", saveBlock: "Enregistrer",
         settingsTitle: "Paramètres", settingsBtn: "Paramètres", appearance: "Apparence & Localisation", language: "Langue",
         toggleTheme: "Changer de Thème", cloudSyncTitle: "Nuage Orbinuity",
@@ -240,8 +240,8 @@ const translations = {
     de: {
         appTitle: "ACM-System", defaultFolder: "Meine Fälle", newFolder: "+ Neuer Ordner", emptyState: "Fall auswählen um zu beginnen",
         addInfoBlock: "+ Info-Block", createBlockTitle: "Block Erstellen", editBlockTitle: "Block Bearbeiten", editBtn: "Bearbeiten",
-        blockType: "Block-Typ", typePerson: "Person / Subjekt", typeGeneral: "Allgemeine Info", typeLocation: "Standort",
-        titleName: "Titel / Name", picture: "Bild", description: "Beschreibung",
+        blockType: "Block-Typ", typePerson: "Person / Subjekt", typeGeneral: "Allgemeine Info", typeLocation: "Standort", typeGallery: "Bilder / Galerie",
+        titleName: "Titel / Name", picture: "Bilder", description: "Beschreibung",
         additionalInfo: "Benutzerdefinierte Felder", addCustomField: "+ Feld Hinzufügen", saveBlock: "Speichern",
         settingsTitle: "Einstellungen", settingsBtn: "Optionen", appearance: "Erscheinungsbild & Sprache", language: "Sprache",
         toggleTheme: "Design Wechseln", cloudSyncTitle: "Orbinuity Cloud Sync",
@@ -272,6 +272,7 @@ function getTypeLabel(type) {
     if (type === 'person') return getTrans('typePerson');
     if (type === 'general') return getTrans('typeGeneral');
     if (type === 'location') return getTrans('typeLocation');
+    if (type === 'gallery') return getTrans('typeGallery');
     return type;
 }
 
@@ -279,6 +280,22 @@ function openImageLightbox(src) {
     if (!src) return;
     lightboxImg.src = src;
     imageLightboxModal.classList.remove('hidden');
+}
+
+function renderImagePreviews() {
+    const container = document.getElementById('image-preview-container');
+    if (!container) return;
+    container.innerHTML = '';
+    currentImageDataUrls.forEach((src, idx) => {
+        const div = document.createElement('div');
+        div.className = 'preview-thumb-container';
+        div.innerHTML = `<img src="${src}"><button type="button" class="preview-thumb-remove">&times;</button>`;
+        div.querySelector('.preview-thumb-remove').addEventListener('click', () => {
+            currentImageDataUrls.splice(idx, 1);
+            renderImagePreviews();
+        });
+        container.appendChild(div);
+    });
 }
 
 async function init() {
@@ -455,6 +472,7 @@ function openViewBlockModal(block) {
     const descEl = document.getElementById('view-block-desc');
     const imgEl = document.getElementById('view-block-img');
     const avatarEl = document.getElementById('view-block-avatar');
+    const galleryEl = document.getElementById('view-block-gallery');
     const fieldsEl = document.getElementById('view-block-fields');
 
     titleEl.textContent = block.title;
@@ -468,11 +486,27 @@ function openViewBlockModal(block) {
         descEl.classList.add('hidden');
     }
 
-    if (block.image) {
-        imgEl.src = block.image;
+    const blockImages = block.images && block.images.length > 0 ? block.images : (block.image ? [block.image] : []);
+
+    if (blockImages.length > 1 || block.type === 'gallery') {
+        imgEl.classList.add('hidden');
+        avatarEl.classList.add('hidden');
+        galleryEl.innerHTML = '';
+        blockImages.forEach(src => {
+            const galleryImg = document.createElement('img');
+            galleryImg.src = src;
+            galleryImg.className = 'clickable-img';
+            galleryImg.addEventListener('click', () => openImageLightbox(src));
+            galleryEl.appendChild(galleryImg);
+        });
+        galleryEl.classList.remove('hidden');
+    } else if (blockImages.length === 1) {
+        galleryEl.classList.add('hidden');
+        imgEl.src = blockImages[0];
         imgEl.classList.remove('hidden');
         avatarEl.classList.add('hidden');
     } else {
+        galleryEl.classList.add('hidden');
         imgEl.src = '';
         imgEl.classList.add('hidden');
         avatarEl.textContent = block.title.substring(0, 2).toUpperCase();
@@ -538,25 +572,44 @@ function renderActiveCase() {
         card.appendChild(cardActions);
 
         let fieldsHTML = block.customFields.map(f => `<div class="custom-field-display"><strong>${f.key}:</strong> <span>${f.value}</span></div>`).join('');
-        const imgHTML = block.image ? `<img src="${block.image}" class="info-card-img clickable-img">` : `<div class="info-card-img">${block.title.substring(0,2).toUpperCase()}</div>`;
+        const blockImages = block.images && block.images.length > 0 ? block.images : (block.image ? [block.image] : []);
 
         const typeText = getTypeLabel(block.type).toUpperCase();
-
         const headerDiv = document.createElement('div');
         headerDiv.className = 'info-card-header';
-        headerDiv.innerHTML = `${imgHTML}<div><h3>${block.title}</h3><span class="info-type">${typeText}</span></div>`;
-        
-        if (block.image) {
-            const cardImgEl = headerDiv.querySelector('img.info-card-img');
-            if (cardImgEl) {
-                cardImgEl.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openImageLightbox(block.image);
-                });
-            }
-        }
 
-        card.appendChild(headerDiv);
+        if (block.type === 'gallery' || blockImages.length > 1) {
+            headerDiv.innerHTML = `<div><h3>${block.title}</h3><span class="info-type">${typeText}</span></div>`;
+            card.appendChild(headerDiv);
+
+            const galleryGrid = document.createElement('div');
+            galleryGrid.className = 'info-card-gallery';
+            blockImages.forEach(src => {
+                const gImg = document.createElement('img');
+                gImg.src = src;
+                gImg.className = 'clickable-img';
+                gImg.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openImageLightbox(src);
+                });
+                galleryGrid.appendChild(gImg);
+            });
+            card.appendChild(galleryGrid);
+        } else {
+            const imgHTML = blockImages.length === 1 ? `<img src="${blockImages[0]}" class="info-card-img clickable-img">` : `<div class="info-card-img">${block.title.substring(0,2).toUpperCase()}</div>`;
+            headerDiv.innerHTML = `${imgHTML}<div><h3>${block.title}</h3><span class="info-type">${typeText}</span></div>`;
+            
+            if (blockImages.length === 1) {
+                const cardImgEl = headerDiv.querySelector('img.info-card-img');
+                if (cardImgEl) {
+                    cardImgEl.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openImageLightbox(blockImages[0]);
+                    });
+                }
+            }
+            card.appendChild(headerDiv);
+        }
 
         if(block.description) {
             const descP = document.createElement('p');
@@ -633,15 +686,8 @@ function editBlock(caseId, blockId) {
     document.getElementById('block-title').value = block.title;
     document.getElementById('block-description').value = block.description || '';
     
-    currentImageDataUrl = block.image || null;
-    const imgPreview = document.getElementById('image-preview');
-    if (currentImageDataUrl) {
-        imgPreview.src = currentImageDataUrl;
-        imgPreview.classList.remove('hidden');
-    } else {
-        imgPreview.src = '';
-        imgPreview.classList.add('hidden');
-    }
+    currentImageDataUrls = block.images && block.images.length > 0 ? [...block.images] : (block.image ? [block.image] : []);
+    renderImagePreviews();
 
     const customContainer = document.getElementById('custom-fields-container');
     customContainer.innerHTML = '';
@@ -1050,8 +1096,8 @@ addListener('add-block-btn', 'click', () => {
     blockModalTitle.textContent = getTrans('createBlockTitle');
     document.getElementById('block-form').reset();
     document.getElementById('custom-fields-container').innerHTML = '';
-    document.getElementById('image-preview').classList.add('hidden');
-    currentImageDataUrl = null;
+    currentImageDataUrls = [];
+    renderImagePreviews();
     blockModal.classList.remove('hidden');
 });
 
@@ -1061,12 +1107,13 @@ addListener('close-modal', 'click', () => {
 });
 
 addListener('block-image', 'change', async function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        currentImageDataUrl = await compressImage(file, 800, 800, 0.7);
-        const img = document.getElementById('image-preview');
-        img.src = currentImageDataUrl;
-        img.classList.remove('hidden');
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+        for (const file of files) {
+            const compressed = await compressImage(file, 800, 800, 0.7);
+            currentImageDataUrls.push(compressed);
+        }
+        renderImagePreviews();
     }
 });
 
@@ -1131,23 +1178,29 @@ addListener('block-form', 'submit', async (e) => {
         if (key && val) customFields.push({ key, value: val });
     });
 
+    const blockType = document.getElementById('block-type').value;
+    const blockTitle = document.getElementById('block-title').value;
+    const blockDesc = document.getElementById('block-description').value;
+
     if (editingBlockId) {
         const block = c.blocks.find(b => b.id === editingBlockId);
         if (block) {
-            block.type = document.getElementById('block-type').value;
-            block.title = document.getElementById('block-title').value;
-            block.description = document.getElementById('block-description').value;
-            block.image = currentImageDataUrl;
+            block.type = blockType;
+            block.title = blockTitle;
+            block.description = blockDesc;
+            block.images = currentImageDataUrls;
+            block.image = currentImageDataUrls[0] || null;
             block.customFields = customFields;
         }
         editingBlockId = null;
     } else {
         const newBlock = {
             id: generateId(),
-            type: document.getElementById('block-type').value,
-            title: document.getElementById('block-title').value,
-            description: document.getElementById('block-description').value,
-            image: currentImageDataUrl, 
+            type: blockType,
+            title: blockTitle,
+            description: blockDesc,
+            images: currentImageDataUrls,
+            image: currentImageDataUrls[0] || null,
             customFields
         };
         c.blocks.push(newBlock);
