@@ -634,16 +634,23 @@ async function autoPushCloud() {
     if (!orbinuityToken) return;
     try {
         const localFolders = folders.filter(f => f.id === 'default' || !f.id.startsWith('room_'));
+        const personalCases = cases.filter(c => !c.folderId || !c.folderId.startsWith('room_'));
 
         const payload = { 
             folders: localFolders, 
-            cases: cases,
+            cases: personalCases,
             settings: {
                 theme: currentTheme,
                 lang: currentLang
             }
         };
         await apiCall(`/external/${APP_ID}`, 'PUT', payload);
+
+        const roomFolders = folders.filter(f => f.id && f.id.startsWith('room_'));
+        for (const room of roomFolders) {
+            const roomCases = cases.filter(c => c.folderId === room.id);
+            await apiCall(`/external/rooms/${room.id}`, 'PUT', { cases: roomCases });
+        }
     } catch (e) {}
 }
 
@@ -651,15 +658,21 @@ async function autoPullCloud() {
     if (!orbinuityToken) return;
     try {
         let roomFolders = [];
+        let roomCases = [];
         try {
             const roomData = await apiCall(`/external/rooms?appId=${APP_ID}`, 'GET');
             if (roomData && Array.isArray(roomData.rooms)) {
-                roomFolders = roomData.rooms.map(r => ({
-                    id: r.id,
-                    name: r.name,
-                    hostId: r.hostId,
-                    members: r.members || []
-                }));
+                roomFolders = roomData.rooms.map(r => {
+                    if (Array.isArray(r.cases)) {
+                        roomCases.push(...r.cases);
+                    }
+                    return {
+                        id: r.id,
+                        name: r.name,
+                        hostId: r.hostId,
+                        members: r.members || []
+                    };
+                });
             }
         } catch (e) {}
 
@@ -677,9 +690,10 @@ async function autoPullCloud() {
 
         folderMap.set('default', { id: 'default', name: 'My Cases', members: [] });
 
+        let personalCases = [];
         if (data && (data.cases || data.folders || data.settings)) {
             if (Array.isArray(data.cases)) {
-                cases = data.cases;
+                personalCases = data.cases.filter(c => !c.folderId || !c.folderId.startsWith('room_'));
             }
 
             let cloudFolders = Array.isArray(data.folders) ? data.folders : [];
@@ -698,6 +712,8 @@ async function autoPullCloud() {
         } else if (res === null) {
             await autoPushCloud();
         }
+
+        cases = [...personalCases, ...roomCases];
 
         roomFolders.forEach(r => { if (r && r.id) folderMap.set(r.id, r); });
 
