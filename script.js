@@ -49,6 +49,42 @@ function eraseCookie(name) {
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.7) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
 let folders = [{ id: 'default', name: 'My Cases', members: [] }];
 let cases = [];
 
@@ -59,6 +95,9 @@ let targetFolderIdForNewCase = null;
 let currentImageDataUrl = null;
 let currentTheme = 'light';
 let currentLang = 'en';
+
+let isSubmitting = false;
+let isSaving = false;
 
 const API_BASE = 'https://api.orbinuity.nl:34430/api';
 let orbinuityToken = getCookie('acm_token') || null;
@@ -81,6 +120,10 @@ const shareModal = document.getElementById('share-modal');
 const blockModal = document.getElementById('block-modal');
 const blockModalTitle = document.getElementById('block-modal-title');
 const viewBlockModal = document.getElementById('view-block-modal');
+
+const imageLightboxModal = document.getElementById('image-lightbox-modal');
+const lightboxImg = document.getElementById('lightbox-img');
+const closeLightboxModal = document.getElementById('close-lightbox-modal');
 
 const caseModal = document.getElementById('case-modal');
 const caseModalTitle = document.getElementById('case-modal-title');
@@ -112,7 +155,7 @@ const translations = {
         alertLoginFail: "Login failed. Please check your credentials.", alertProfileFail: "Failed to load user profile after login.",
         alertAddMemberSuccess: "Added user successfully.", alertAddMemberFail: "Failed to add member to room. Make sure username is correct.", alertRemoveMemberFail: "Failed to remove member from room.",
         alertCloudConnectReq: "You must connect to Orbinuity Cloud first.", alertCreateFolderFail: "Could not create folder on server. Please try again.",
-        alertRenameRoomFail: "Failed to update room name on server."
+        alertRenameRoomFail: "Failed to update room name on server.", alertSaveFail: "Failed to sync changes to cloud."
     },
     nl: {
         appTitle: "ACM Systeem", defaultFolder: "Mijn Zaken", newFolder: "+ Nieuwe Map", emptyState: "Selecteer een zaak om te beginnen",
@@ -137,7 +180,7 @@ const translations = {
         alertLoginFail: "Inloggen mislukt. Controleer uw gegevens.", alertProfileFail: "Laden van gebruikersprofiel mislukt na inloggen.",
         alertAddMemberSuccess: "Gebruiker succesvol toegevoegd.", alertAddMemberFail: "Toevoegen van lid mislukt. Controleer de gebruikersnaam.", alertRemoveMemberFail: "Verwijderen van lid mislukt.",
         alertCloudConnectReq: "U moet eerst verbinden met Orbinuity Cloud.", alertCreateFolderFail: "Kon map niet aanmaken op de server. Probeer het opnieuw.",
-        alertRenameRoomFail: "Bijwerken van mapnaam op de server mislukt."
+        alertRenameRoomFail: "Bijwerken van mapnaam op de server mislukt.", alertSaveFail: "Synchroniseren met cloud mislukt."
     },
     es: {
         appTitle: "Sistema ACM", defaultFolder: "Mis Casos", newFolder: "+ Nueva Carpeta", emptyState: "Seleccione un caso para comenzar",
@@ -162,7 +205,7 @@ const translations = {
         alertLoginFail: "Error de inicio de sesión. Verifique sus credenciales.", alertProfileFail: "Error al cargar el perfil de usuario después de iniciar sesión.",
         alertAddMemberSuccess: "Usuario añadido con éxito.", alertAddMemberFail: "Error al añadir miembro. Verifique el nombre de usuario.", alertRemoveMemberFail: "Error al eliminar miembro del aula.",
         alertCloudConnectReq: "Primero debe conectarse a Orbinuity Cloud.", alertCreateFolderFail: "No se pudo crear la carpeta en el servidor. Inténtelo de nuevo.",
-        alertRenameRoomFail: "Error al actualizar el nombre de la carpeta en el servidor."
+        alertRenameRoomFail: "Error al actualizar el nombre de la carpeta en el servidor.", alertSaveFail: "Error al sincronizar cambios en la nube."
     },
     fr: {
         appTitle: "Système ACM", defaultFolder: "Mes Dossiers", newFolder: "+ Nouveau Dossier", emptyState: "Sélectionnez un cas pour commencer",
@@ -187,7 +230,7 @@ const translations = {
         alertLoginFail: "Échec de la connexion. Veuillez vérifier vos identifiants.", alertProfileFail: "Échec du chargement du profil utilisateur après la connexion.",
         alertAddMemberSuccess: "Utilisateur ajouté avec succès.", alertAddMemberFail: "Échec de l'ajout du membre. Vérifiez le nom d'utilisateur.", alertRemoveMemberFail: "Échec de la suppression du membre.",
         alertCloudConnectReq: "Vous devez d'abord vous connecter à Orbinuity Cloud.", alertCreateFolderFail: "Impossible de créer le dossier sur le serveur. Veuillez réessayer.",
-        alertRenameRoomFail: "Échec de la mise à jour du nom du dossier sur le serveur."
+        alertRenameRoomFail: "Échec de la mise à jour du nom du dossier sur le serveur.", alertSaveFail: "Échec de la synchronisation."
     },
     de: {
         appTitle: "ACM-System", defaultFolder: "Meine Fälle", newFolder: "+ Neuer Ordner", emptyState: "Fall auswählen um zu beginnen",
@@ -212,7 +255,7 @@ const translations = {
         alertLoginFail: "Anmeldung fehlgeschlagen. Bitte Anmeldedaten überprüfen.", alertProfileFail: "Profil konnte nach der Anmeldung nicht geladen werden.",
         alertAddMemberSuccess: "Benutzer erfolgreich hinzugefügt.", alertAddMemberFail: "Mitglied konnte nicht hinzugefügt werden. Benutzernamen überprüfen.", alertRemoveMemberFail: "Fehler beim Entfernen des Mitglieds.",
         alertCloudConnectReq: "Sie müssen sich zuerst mit Orbinuity Cloud verbinden.", alertCreateFolderFail: "Ordner konnte auf dem Server nicht erstellt werden. Bitte erneut versuchen.",
-        alertRenameRoomFail: "Ordnername konnte auf dem Server nicht aktualisiert werden."
+        alertRenameRoomFail: "Ordnername konnte auf dem Server nicht aktualisiert werden.", alertSaveFail: "Cloud-Synchronisierung fehlgeschlagen."
     }
 };
 
@@ -227,9 +270,37 @@ function getTypeLabel(type) {
     return type;
 }
 
+function openImageLightbox(src) {
+    if (!src) return;
+    lightboxImg.src = src;
+    imageLightboxModal.classList.remove('hidden');
+}
+
+closeLightboxModal.addEventListener('click', () => {
+    imageLightboxModal.classList.add('hidden');
+});
+
+imageLightboxModal.addEventListener('click', (e) => {
+    if (e.target === imageLightboxModal) {
+        imageLightboxModal.classList.add('hidden');
+    }
+});
+
+document.getElementById('view-block-img').addEventListener('click', () => {
+    const src = document.getElementById('view-block-img').src;
+    if (src) openImageLightbox(src);
+});
+
 async function init() {
     applyTheme(currentTheme);
     applyLanguage(currentLang, false);
+
+    try {
+        const localF = localStorage.getItem('acm_folders');
+        const localC = localStorage.getItem('acm_cases');
+        if (localF) folders = JSON.parse(localF);
+        if (localC) cases = JSON.parse(localC);
+    } catch(e) {}
 
     if (orbinuityToken) {
         try {
@@ -253,6 +324,10 @@ async function init() {
 }
 
 async function saveState() {
+    try {
+        localStorage.setItem('acm_folders', JSON.stringify(folders.filter(f => f.id === 'default' || !f.id.startsWith('room_'))));
+        localStorage.setItem('acm_cases', JSON.stringify(cases.filter(c => !c.folderId || !c.folderId.startsWith('room_'))));
+    } catch (e) {}
     await autoPushCloud();
 }
 
@@ -473,13 +548,24 @@ function renderActiveCase() {
         card.appendChild(cardActions);
 
         let fieldsHTML = block.customFields.map(f => `<div class="custom-field-display"><strong>${f.key}:</strong> <span>${f.value}</span></div>`).join('');
-        const imgHTML = block.image ? `<img src="${block.image}" class="info-card-img">` : `<div class="info-card-img">${block.title.substring(0,2).toUpperCase()}</div>`;
+        const imgHTML = block.image ? `<img src="${block.image}" class="info-card-img clickable-img">` : `<div class="info-card-img">${block.title.substring(0,2).toUpperCase()}</div>`;
 
         const typeText = getTypeLabel(block.type).toUpperCase();
 
         const headerDiv = document.createElement('div');
         headerDiv.className = 'info-card-header';
         headerDiv.innerHTML = `${imgHTML}<div><h3>${block.title}</h3><span class="info-type">${typeText}</span></div>`;
+        
+        if (block.image) {
+            const cardImgEl = headerDiv.querySelector('img.info-card-img');
+            if (cardImgEl) {
+                cardImgEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openImageLightbox(block.image);
+                });
+            }
+        }
+
         card.appendChild(headerDiv);
 
         if(block.description) {
@@ -561,10 +647,13 @@ document.getElementById('edit-case-btn').addEventListener('click', () => {
 
 caseForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const title = caseTitleInput.value.trim();
     const description = caseDescInput.value.trim();
-
     if (!title) return;
+
+    isSubmitting = true;
 
     if (editingCaseId) {
         const c = cases.find(item => item.id === editingCaseId);
@@ -572,6 +661,7 @@ caseForm.addEventListener('submit', async (e) => {
             c.title = title;
             c.description = description;
         }
+        editingCaseId = null;
     } else {
         const newCase = {
             id: generateId(),
@@ -584,10 +674,14 @@ caseForm.addEventListener('submit', async (e) => {
         activeCaseId = newCase.id;
     }
 
-    await saveState();
-    renderSidebar();
-    renderActiveCase();
-    caseModal.classList.add('hidden');
+    try {
+        await saveState();
+        renderSidebar();
+        renderActiveCase();
+        caseModal.classList.add('hidden');
+    } finally {
+        isSubmitting = false;
+    }
 });
 
 async function deleteFolder(id) {
@@ -674,6 +768,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 
 async function autoPushCloud() {
     if (!orbinuityToken) return;
+    isSaving = true;
     try {
         const localFolders = folders.filter(f => f.id === 'default' || !f.id.startsWith('room_'));
         const personalCases = cases.filter(c => !c.folderId || !c.folderId.startsWith('room_'));
@@ -693,7 +788,11 @@ async function autoPushCloud() {
             const roomCases = cases.filter(c => (c.folderId || 'default') === room.id);
             await apiCall(`/external/rooms/${room.id}`, 'PUT', { name: room.name, cases: roomCases });
         }
-    } catch (e) {}
+    } catch (e) {
+        showToast(getTrans('alertSaveFail'));
+    } finally {
+        isSaving = false;
+    }
 }
 
 async function autoPullCloud() {
@@ -783,7 +882,9 @@ async function autoPullCloud() {
 function startAutoSyncTimer() {
     if (autoSyncInterval) clearInterval(autoSyncInterval);
     autoSyncInterval = setInterval(() => {
-        if (orbinuityToken) autoPullCloud();
+        if (orbinuityToken && !isSaving && !isSubmitting) {
+            autoPullCloud();
+        }
     }, 10000);
 }
 
@@ -1030,16 +1131,13 @@ document.getElementById('close-modal').addEventListener('click', () => {
     blockModal.classList.add('hidden');
 });
 
-document.getElementById('block-image').addEventListener('change', function(e) {
+document.getElementById('block-image').addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            currentImageDataUrl = event.target.result;
-            const img = document.getElementById('image-preview');
-            img.src = currentImageDataUrl; img.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
+        currentImageDataUrl = await compressImage(file, 800, 800, 0.7);
+        const img = document.getElementById('image-preview');
+        img.src = currentImageDataUrl;
+        img.classList.remove('hidden');
     }
 });
 
@@ -1047,14 +1145,18 @@ document.getElementById('add-field-btn').addEventListener('click', () => addCust
 
 document.getElementById('block-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    const c = cases.find(c => c.id === activeCaseId);
+    if (!c) return;
+
+    isSubmitting = true;
+
     const customFields = [];
     document.querySelectorAll('.custom-field-input').forEach(row => {
         const key = row.querySelector('.field-key').value; const val = row.querySelector('.field-val').value;
         if(key && val) customFields.push({ key, value: val });
     });
-
-    const c = cases.find(c => c.id === activeCaseId);
-    if (!c) return;
 
     if (editingBlockId) {
         const block = c.blocks.find(b => b.id === editingBlockId);
@@ -1078,9 +1180,13 @@ document.getElementById('block-form').addEventListener('submit', async (e) => {
         c.blocks.push(newBlock);
     }
 
-    await saveState(); 
-    renderActiveCase(); 
-    blockModal.classList.add('hidden');
+    try {
+        await saveState(); 
+        renderActiveCase(); 
+        blockModal.classList.add('hidden');
+    } finally {
+        isSubmitting = false;
+    }
 });
 
 init();
