@@ -196,7 +196,7 @@
         <div class="modal-content view-block-content">
             <span class="close-btn" id="close-view-block-modal">&times;</span>
             <div class="view-block-header">
-                <img id="view-block-img" class="view-block-img hidden" alt="Preview">
+                <img id="view-block-img" class="view-block-img hidden clickable-img" alt="Preview">
                 <div id="view-block-avatar" class="view-block-avatar hidden"></div>
                 <div>
                     <h2 id="view-block-title"></h2>
@@ -205,6 +205,13 @@
             </div>
             <p id="view-block-desc" class="view-block-desc"></p>
             <div id="view-block-fields" class="view-block-fields"></div>
+        </div>
+    </div>
+
+    <div id="image-lightbox-modal" class="modal hidden">
+        <div class="lightbox-content">
+            <span class="close-btn" id="close-lightbox-modal">&times;</span>
+            <img id="lightbox-img" alt="Enlarged View">
         </div>
     </div>
 
